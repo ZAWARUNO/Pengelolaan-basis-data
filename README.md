@@ -13,6 +13,6 @@ Repo Tugas kelompok 2 Membuat sistem Pengelolaan Basis Data
 <ol>
   <li>ADD Akun Saya di <a href="https://github.com/ZAWARUNO">ZAWARUNO</a></li>
   <li>Lalu Klik link ini <a href="https://github.com/ZAWARUNO/Pengelolaan-basis-data/issues/new/choose">Issues</a></li>
-  <li>isi nama kalian</li>
-  <li>Selesai selamat bergabung</li>
+  <li>isi nama kalian agar konfirm itu kalian</li>
+  <li>Selesai saya akan mengundang kalian silakan cek <a href="https://github.com/notifications">Notifikasi</a> selamat bergabung</li>
 </ol>
