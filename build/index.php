@@ -191,12 +191,12 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
               <!-- Menu Item Calendar -->
               <li>
                 <a
-                  href="?page=calendar"
-                  @click="selected = (selected === 'Calendar' ? '':'Calendar')"
+                  href="?page=produk"
+                  @click="selected = (selected === 'produk' ? '':'produk')"
                   class="menu-item group"
-                  :class=" (selected === 'Calendar') && (page === 'calendar') ? 'menu-item-active' : 'menu-item-inactive'">
+                  :class=" (selected === 'produk') && (page === 'produk') ? 'menu-item-active' : 'menu-item-inactive'">
                   <svg
-                    :class="(selected === 'Calendar') && (page === 'calendar') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
+                    :class="(selected === 'produk') && (page === 'produk') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
@@ -212,108 +212,12 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
                   <span
                     class="menu-item-text"
                     :class="sidebarToggle ? 'lg:hidden' : ''">
-                    Calendar
+                    Produk
                   </span>
                 </a>
               </li>
               <!-- Menu Item Calendar -->
 
-              <!-- Menu Item Profile -->
-              <li>
-                <a
-                  href="profile.html"
-                  @click="selected = (selected === 'Profile' ? '':'Profile')"
-                  class="menu-item group"
-                  :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'">
-                  <svg
-                    :class="(selected === 'Profile') && (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z"
-                      fill="" />
-                  </svg>
-
-                  <span
-                    class="menu-item-text"
-                    :class="sidebarToggle ? 'lg:hidden' : ''">
-                    User Profile
-                  </span>
-                </a>
-              </li>
-              <!-- Menu Item Profile -->
-
-              <!-- Menu Item Forms -->
-              <li>
-                <a
-                  href="#"
-                  @click.prevent="selected = (selected === 'Forms' ? '':'Forms')"
-                  class="menu-item group"
-                  :class=" (selected === 'Forms') || (page === 'formElements' || page === 'formLayout' || page === 'proFormElements' || page === 'proFormLayout') ? 'menu-item-active' : 'menu-item-inactive'">
-                  <svg
-                    :class="(selected === 'Forms') || (page === 'formElements' || page === 'formLayout' || page === 'proFormElements' || page === 'proFormLayout') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H18.5001C19.7427 20.75 20.7501 19.7426 20.7501 18.5V5.5C20.7501 4.25736 19.7427 3.25 18.5001 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H18.5001C18.9143 4.75 19.2501 5.08579 19.2501 5.5V18.5C19.2501 18.9142 18.9143 19.25 18.5001 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V5.5ZM6.25005 9.7143C6.25005 9.30008 6.58583 8.9643 7.00005 8.9643L17 8.96429C17.4143 8.96429 17.75 9.30008 17.75 9.71429C17.75 10.1285 17.4143 10.4643 17 10.4643L7.00005 10.4643C6.58583 10.4643 6.25005 10.1285 6.25005 9.7143ZM6.25005 14.2857C6.25005 13.8715 6.58583 13.5357 7.00005 13.5357H17C17.4143 13.5357 17.75 13.8715 17.75 14.2857C17.75 14.6999 17.4143 15.0357 17 15.0357H7.00005C6.58583 15.0357 6.25005 14.6999 6.25005 14.2857Z"
-                      fill="" />
-                  </svg>
-
-                  <span
-                    class="menu-item-text"
-                    :class="sidebarToggle ? 'lg:hidden' : ''">
-                    Forms
-                  </span>
-
-                  <svg
-                    class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current"
-                    :class="[(selected === 'Forms') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : '' ]"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585"
-                      stroke=""
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round" />
-                  </svg>
-                </a>
-
-                <!-- Dropdown Menu Start -->
-                <div
-                  class="overflow-hidden transform translate"
-                  :class="(selected === 'Forms') ? 'block' :'hidden'">
-                  <ul
-                    :class="sidebarToggle ? 'lg:hidden' : 'flex'"
-                    class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
-                    <li>
-                      <a
-                        href="form-elements.html"
-                        class="menu-dropdown-item group"
-                        :class="page === 'formElements' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                        Form Elements
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <!-- Dropdown Menu End -->
-              </li>
-              <!-- Menu Item Forms -->
-
-              <!-- Menu Item Tables -->
               <li>
                 <a
                   href="#"
@@ -385,79 +289,6 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
                 <!-- Dropdown Menu End -->
               </li>
               <!-- Menu Item Tables -->
-
-              <!-- Menu Item Pages -->
-              <li>
-                <a
-                  href="#"
-                  @click.prevent="selected = (selected === 'Pages' ? '':'Pages')"
-                  class="menu-item group"
-                  :class="(selected === 'Pages') || (page === 'fileManager' || page === 'pricingTables' || page === 'blank' || page === 'page404' || page === 'page500' || page === 'page503' || page === 'success' || page === 'faq' || page === 'comingSoon' || page === 'maintenance') ? 'menu-item-active' : 'menu-item-inactive'">
-                  <svg
-                    :class="(selected === 'Pages') || (page === 'fileManager' || page === 'pricingTables' || page === 'blank' || page === 'page404' || page === 'page500' || page === 'page503' || page === 'success' || page === 'faq' || page === 'comingSoon' || page === 'maintenance') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M8.50391 4.25C8.50391 3.83579 8.83969 3.5 9.25391 3.5H15.2777C15.4766 3.5 15.6674 3.57902 15.8081 3.71967L18.2807 6.19234C18.4214 6.333 18.5004 6.52376 18.5004 6.72268V16.75C18.5004 17.1642 18.1646 17.5 17.7504 17.5H16.248V17.4993H14.748V17.5H9.25391C8.83969 17.5 8.50391 17.1642 8.50391 16.75V4.25ZM14.748 19H9.25391C8.01126 19 7.00391 17.9926 7.00391 16.75V6.49854H6.24805C5.83383 6.49854 5.49805 6.83432 5.49805 7.24854V19.75C5.49805 20.1642 5.83383 20.5 6.24805 20.5H13.998C14.4123 20.5 14.748 20.1642 14.748 19.75L14.748 19ZM7.00391 4.99854V4.25C7.00391 3.00736 8.01127 2 9.25391 2H15.2777C15.8745 2 16.4468 2.23705 16.8687 2.659L19.3414 5.13168C19.7634 5.55364 20.0004 6.12594 20.0004 6.72268V16.75C20.0004 17.9926 18.9931 19 17.7504 19H16.248L16.248 19.75C16.248 20.9926 15.2407 22 13.998 22H6.24805C5.00541 22 3.99805 20.9926 3.99805 19.75V7.24854C3.99805 6.00589 5.00541 4.99854 6.24805 4.99854H7.00391Z"
-                      fill="" />
-                  </svg>
-
-                  <span
-                    class="menu-item-text"
-                    :class="sidebarToggle ? 'lg:hidden' : ''">
-                    Pages
-                  </span>
-
-                  <svg
-                    class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current"
-                    :class="[(selected === 'Pages') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : '' ]"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585"
-                      stroke=""
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round" />
-                  </svg>
-                </a>
-
-                <!-- Dropdown Menu Start -->
-                <div
-                  class="overflow-hidden transform translate"
-                  :class="(selected === 'Pages') ? 'block' :'hidden'">
-                  <ul
-                    :class="sidebarToggle ? 'lg:hidden' : 'flex'"
-                    class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
-                    <li>
-                      <a
-                        href="blank.html"
-                        class="menu-dropdown-item group"
-                        :class="page === 'blank' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                        Blank Page
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="404.html"
-                        class="menu-dropdown-item group"
-                        :class="page === 'page404' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                        404 Error
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <!-- Dropdown Menu End -->
-              </li>
-              <!-- Menu Item Pages -->
             </ul>
           </div>
 
@@ -467,7 +298,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
               <span
                 class="menu-group-title"
                 :class="sidebarToggle ? 'lg:hidden' : ''">
-                others
+                Lainnya
               </span>
 
               <svg

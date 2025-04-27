@@ -1,3 +1,61 @@
+<?php
+if (isset($_GET['edit'])) {
+  $id = $_GET['edit'];
+  $q = mysqli_query($koneksi, "SELECT * FROM pelanggan WHERE id_pelanggan='$id'");
+  $editData = mysqli_fetch_assoc($q);
+}
+
+if (isset($_POST['nama_pelanggan'])) {
+  $nama = $_POST['nama_pelanggan'];
+  $alamat = $_POST['alamat'];
+  $no_telepon = $_POST['no_telepon'];
+
+  $result = mysqli_query($koneksi, "UPDATE pelanggan SET nama_pelanggan='$nama', alamat='$alamat', no_telepon='$no_telepon' WHERE id_pelanggan='$id'");
+
+  if ($result) {
+    echo '
+  <div id="successAlert" class="fixed top-4 left-0 right-0 mx-auto w-full max-w-md z-999999 rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15">
+    <div class="flex items-start gap-3">
+      <div class="-mt-0.5 text-success-500">
+        <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3.70186 12.0001C3.70186 7.41711 7.41711 3.70186 12.0001 3.70186C16.5831 3.70186 20.2984 7.41711 20.2984 12.0001C20.2984 16.5831 16.5831 20.2984 12.0001 20.2984C7.41711 20.2984 3.70186 16.5831 3.70186 12.0001ZM12.0001 1.90186C6.423 1.90186 1.90186 6.423 1.90186 12.0001C1.90186 17.5772 6.423 22.0984 12.0001 22.0984C17.5772 22.0984 22.0984 17.5772 22.0984 12.0001C22.0984 6.423 17.5772 1.90186 12.0001 1.90186ZM15.6197 10.7395C15.9712 10.388 15.9712 9.81819 15.6197 9.46672C15.2683 9.11525 14.6984 9.11525 14.347 9.46672L11.1894 12.6243L9.6533 11.0883C9.30183 10.7368 8.73198 10.7368 8.38051 11.0883C8.02904 11.4397 8.02904 12.0096 8.38051 12.3611L10.553 14.5335C10.7217 14.7023 10.9507 14.7971 11.1894 14.7971C11.428 14.7971 11.657 14.7023 11.8257 14.5335L15.6197 10.7395Z" fill=""/>
+        </svg>
+      </div>
+      <div>
+        <h4 class="mb-1 text-sm font-semibold text-gray-800 dark:text-white/90">Tambah Pelanggan Berhasil</h4>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Pelanggan ' . $nama . ' berhasil ditambahkan</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    setTimeout(function() {
+      document.getElementById("successAlert").style.display = "none";
+    }, 3000);
+    window.location.href = "?page=pelanggan";
+  </script>';
+  } else {
+    echo '<div id="errorAlert" class="fixed top-4 left-0 right-0 mx-auto w-full max-w-md z-9999 rounded-xl border border-warning-500 bg-warning-50 p-4 dark:border-warning-500/30 dark:bg-warning-500/15">
+      <div class="flex items-start gap-3">
+        <div class="-mt-0.5 text-warning-500 dark:text-orange-400">
+          <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.6501 12.0001C3.6501 7.38852 7.38852 3.6501 12.0001 3.6501C16.6117 3.6501 20.3501 7.38852 20.3501 12.0001C20.3501 16.6117 16.6117 20.3501 12.0001 20.3501C7.38852 20.3501 3.6501 16.6117 3.6501 12.0001ZM12.0001 1.8501C6.39441 1.8501 1.8501 6.39441 1.8501 12.0001C1.8501 17.6058 6.39441 22.1501 12.0001 22.1501C17.6058 22.1501 22.1501 17.6058 22.1501 12.0001C22.1501 6.39441 17.6058 1.8501 12.0001 1.8501ZM10.9992 7.52517C10.9992 8.07746 11.4469 8.52517 11.9992 8.52517H12.0002C12.5525 8.52517 13.0002 8.07746 13.0002 7.52517C13.0002 6.97289 12.5525 6.52517 12.0002 6.52517H11.9992C11.4469 6.52517 10.9992 6.97289 10.9992 7.52517ZM12.0002 17.3715C11.586 17.3715 11.2502 17.0357 11.2502 16.6215V10.945C11.2502 10.5308 11.586 10.195 12.0002 10.195C12.4144 10.195 12.7502 10.5308 12.7502 10.945V16.6215C12.7502 17.0357 12.4144 17.3715 12.0002 17.3715Z" fill=""/>
+          </svg>
+        </div>
+        <div>
+          <h4 class="mb-1 text-sm font-semibold text-gray-800 dark:text-white/90">Menambahkan Pelanggan Gagal</h4>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Coba lagi Atau tunggu beberapa saat</p>
+        </div>
+      </div>
+    </div>
+    <script>
+      setTimeout(function() {
+        document.getElementById("errorAlert").style.display = "none";
+      }, 3000);
+    </script>';
+  }
+}
+?>
 <!-- ===== Page Wrapper Start ===== -->
 <div class="flex h-screen overflow-hidden">
 
@@ -124,8 +182,8 @@
                           <td class="px-5 py-4 sm:px-6">
                             <div class="flex items-center">
                               <button
-                                @click="isOpen = true"
-                                class="flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-warning-400 dark:bg-warning-500/15 dark:text-warning-500 px-4 py-3 font-medium text-white hover:bg-warning-500 lg:inline-flex lg:w-auto">
+                                onclick="window.location.href='?page=pelanggan&edit=<?php echo $data['id_pelanggan']; ?>'"
+                                class="flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-warning-400 dark:bg-warning-500/15 dark:text-warning-500 px-4 py-3 font-medium text-white hover:bg-warning-500 lg:inline-flex lg:w-auto" type="button">
                                 <svg
                                   class="fill-current"
                                   width="18"
@@ -149,7 +207,7 @@
                             </div>
                           </td>
                         </tr>
-                      <?php ;endwhile ?>
+                      <?php endwhile ?>
                       <!-- End of example row -->
                     </tbody>
                   </table>
@@ -168,7 +226,13 @@
 
 <!-- BEGIN MODAL -->
 <div
+  id="modalEdit"
   x-show="isOpen"
+  <?php if ($editData) : ?>
+  x-data="{ isOpen: true }"
+  <?php else : ?>
+  x-data="{ isOpen: false }"
+  <?php endif; ?>
   class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-99999">
   <div
     class="modal-close-btn fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
@@ -178,6 +242,7 @@
     <!-- close btn -->
     <button
       @click="isOpen = false"
+      onclick="window.location.href='?page=pelanggan'"
       class="transition-color absolute right-5 top-5 z-999 flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:bg-white/[0.05] dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-gray-300">
       <svg
         class="fill-current"
@@ -196,125 +261,54 @@
     <div class="px-2 pr-14">
       <h4
         class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-        Edit Personal Information
+        Edit Pelanggan
       </h4>
-      <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-        Update your details to keep your profile up-to-date.
-      </p>
     </div>
-    <form class="flex flex-col">
-      <div class="custom-scrollbar h-[450px] overflow-y-auto px-2">
-        <div>
-          <h5
-            class="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-            Social Links
-          </h5>
-
-          <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-            <div>
-              <label
-                class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Facebook
-              </label>
-              <input
-                type="text"
-                value="https://facebook.com/PimjoHQ"
-                class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-            </div>
-
-            <div>
-              <label
-                class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                X.com
-              </label>
-              <input
-                type="text"
-                value="https://x.com/PimjoHQ"
-                class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-            </div>
-
-            <div>
-              <label
-                class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Linkedin
-              </label>
-              <input
-                type="text"
-                value="https://linkedin.com/PimjoHQ"
-                class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-            </div>
-
-            <div>
-              <label
-                class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Instagram
-              </label>
-              <input
-                type="text"
-                value="https://instagram.com/PimjoHQ"
-                class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-            </div>
-          </div>
-        </div>
+    <form method="POST" action="" class="flex flex-col">
+      <div class="custom-scrollbar h-[250px] overflow-y-auto px-2">
         <div class="mt-7">
           <h5
             class="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-            Personal Information
+            Informasi Pelanggan
           </h5>
 
           <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
             <div class="col-span-2 lg:col-span-1">
               <label
                 class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                First Name
+                Nama Pelanggan
               </label>
               <input
                 type="text"
-                value="Musharof"
+                name="nama_pelanggan"
+                value="<?php echo $editData['nama_pelanggan'] ?? ''; ?>"
                 class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
             </div>
 
             <div class="col-span-2 lg:col-span-1">
               <label
                 class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Last Name
+                Alamat
               </label>
               <input
                 type="text"
-                value="Chowdhury"
+                name="alamat"
+                required
+                value="<?php echo $editData['alamat'] ?? ''; ?>"
                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
             </div>
-
-            <div class="col-span-2 lg:col-span-1">
-              <label
-                class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Email Address
-              </label>
-              <input
-                type="text"
-                value="randomuser@pimjo.com"
-                class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-            </div>
-
-            <div class="col-span-2 lg:col-span-1">
-              <label
-                class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Phone
-              </label>
-              <input
-                type="text"
-                value="+09 363 398 46"
-                class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-            </div>
-
             <div class="col-span-2">
               <label
                 class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Bio
+                No Telepon
               </label>
               <input
-                type="text"
-                value="Team Manager"
+                type="tel"
+                name="no_telepon"
+                pattern="[0-9]+"
+                maxlength="9"
+                value="<?php echo $editData['no_telepon'] ?? ''; ?>"
+                required
                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
             </div>
           </div>
@@ -323,119 +317,19 @@
       <div class="flex items-center gap-3 px-2 mt-6 lg:justify-end">
         <button
           @click="isOpen = false"
+          onclick="window.location.href='?page=pelanggan'"
           type="button"
+          required
           class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] sm:w-auto">
-          Close
+          Tutup
         </button>
         <button
-          type="button"
+          type="submit"
           class="flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">
-          Save Changes
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
-<div
-  x-show="isProfileAddressModal"
-  class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-99999">
-  <div
-    class="modal-close-btn fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
-  <div
-    @click.outside="isProfileAddressModal = false"
-    class="no-scrollbar relative flex w-full max-w-[700px] flex-col overflow-y-auto rounded-3xl bg-white p-6 dark:bg-gray-900 lg:p-11">
-    <!-- close btn -->
-    <button
-      @click="isProfileAddressModal = false"
-      class="transition-color absolute right-5 top-5 z-999 flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:bg-white/[0.05] dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-gray-300">
-      <svg
-        class="fill-current"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M6.04289 16.5418C5.65237 16.9323 5.65237 17.5655 6.04289 17.956C6.43342 18.3465 7.06658 18.3465 7.45711 17.956L11.9987 13.4144L16.5408 17.9565C16.9313 18.347 17.5645 18.347 17.955 17.9565C18.3455 17.566 18.3455 16.9328 17.955 16.5423L13.4129 12.0002L17.955 7.45808C18.3455 7.06756 18.3455 6.43439 17.955 6.04387C17.5645 5.65335 16.9313 5.65335 16.5408 6.04387L11.9987 10.586L7.45711 6.04439C7.06658 5.65386 6.43342 5.65386 6.04289 6.04439C5.65237 6.43491 5.65237 7.06808 6.04289 7.4586L10.5845 12.0002L6.04289 16.5418Z"
-          fill="" />
-      </svg>
-    </button>
-
-    <div class="px-2 pr-14">
-      <h4
-        class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-        Edit Address
-      </h4>
-      <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-        Update your details to keep your profile up-to-date.
-      </p>
-    </div>
-    <form class="flex flex-col">
-      <div class="px-2 overflow-y-auto custom-scrollbar">
-        <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-          <div>
-            <label
-              class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-              Country
-            </label>
-            <input
-              type="text"
-              value="United States"
-              class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-          </div>
-
-          <div>
-            <label
-              class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-              City/State
-            </label>
-            <input
-              type="text"
-              value="Arizona, United States"
-              class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-          </div>
-
-          <div>
-            <label
-              class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-              Postal Code
-            </label>
-            <input
-              type="text"
-              value="ERT 2489"
-              class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-          </div>
-
-          <div>
-            <label
-              class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-              TAX ID
-            </label>
-            <input
-              type="text"
-              value="AS4568384"
-              class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-          </div>
-        </div>
-      </div>
-      <div class="flex items-center gap-3 mt-6 lg:justify-end">
-        <button
-          @click="isProfileAddressModal = false"
-          type="button"
-          class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] sm:w-auto">
-          Close
-        </button>
-        <button
-          type="button"
-          class="flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">
-          Save Changes
+          Simpan
         </button>
       </div>
     </form>
   </div>
 </div>
 <!-- END MODAL -->
-
-<script defer src="bundle.js"></script>
