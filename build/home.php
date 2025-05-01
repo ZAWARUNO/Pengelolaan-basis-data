@@ -1,3 +1,70 @@
+<?php
+// Ensure $koneksi is available here. Since index.php includes database.php and then includes home.php, it should be.
+
+// Ambil total penjualan BULAN INI
+$totalPenjualanBulanan = 0;
+$sqlBulanan = "SELECT SUM(total_harga) as total FROM penjualan WHERE MONTH(tanggal_penjualan) = MONTH(CURDATE()) AND YEAR(tanggal_penjualan) = YEAR(CURDATE())";
+$resultBulanan = $koneksi->query($sqlBulanan);
+if ($resultBulanan && $resultBulanan->num_rows > 0) {
+   $rowBulanan = $resultBulanan->fetch_assoc();
+   // Ensure 'total' exists and handle null case
+   $totalPenjualanBulanan = $rowBulanan["total"] ?? 0;
+}
+
+// Ambil total penjualan HARI INI
+$totalPenjualanHariIni = 0;
+$sqlHariIni = "SELECT SUM(total_harga) as total FROM penjualan WHERE DATE(tanggal_penjualan) = CURDATE()";
+$resultHariIni = $koneksi->query($sqlHariIni);
+if ($resultHariIni && $resultHariIni->num_rows > 0) {
+   $rowHariIni = $resultHariIni->fetch_assoc();
+   // Ensure 'total' exists and handle null case
+   $totalPenjualanHariIni = $rowHariIni["total"] ?? 0;
+}
+
+
+// Tentukan target bulanan
+$targetBulanan = 10000000; // Rp 10 Juta (Diubah dari 300 Juta)
+
+// Hitung persentase pencapaian
+$persentasePencapaian = 0;
+// Ensure totalPenjualanBulanan is numeric before division
+$numericTotalPenjualanBulanan = filter_var($totalPenjualanBulanan, FILTER_VALIDATE_FLOAT);
+
+if ($targetBulanan > 0 && $numericTotalPenjualanBulanan !== false) {
+   $persentasePencapaian = ($numericTotalPenjualanBulanan / $targetBulanan) * 100;
+}
+
+// Note: Don't close connection here if index.php needs it later ($koneksi->close();)
+
+// --- Data untuk Chart Batang (Penjualan per Bulan) ---
+$dataPenjualanPerBulan = array_fill(1, 12, 0); // Inisialisasi array 12 bulan dengan nilai 0
+$bulanLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']; // Label bulan
+
+$tahunSekarang = date('Y');
+$sqlPenjualanBulanan = "SELECT MONTH(tanggal_penjualan) as bulan, SUM(total_harga) as total 
+                       FROM penjualan 
+                       WHERE YEAR(tanggal_penjualan) = $tahunSekarang
+                       GROUP BY MONTH(tanggal_penjualan)
+                       ORDER BY bulan ASC";
+
+$resultPenjualanBulanan = $koneksi->query($sqlPenjualanBulanan);
+
+if ($resultPenjualanBulanan) {
+   while ($row = $resultPenjualanBulanan->fetch_assoc()) {
+      $bulan = (int)$row['bulan'];
+      $total = (float)($row['total'] ?? 0);
+      if ($bulan >= 1 && $bulan <= 12) {
+         $dataPenjualanPerBulan[$bulan] = $total;
+      }
+   }
+}
+
+// Ubah data menjadi array numerik sederhana untuk JavaScript
+$dataSeriesChartBatang = array_values($dataPenjualanPerBulan);
+// --- Akhir Data Chart Batang ---
+
+?>
+
 <main>
    <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
       <div class="grid grid-cols-12 gap-4 md:gap-6">
@@ -30,29 +97,42 @@
                         <h4
                            class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">
                            <?php
-                           $totalPelanggan = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM pelanggan"));
+                           // Fetch total customers
+                           $totalPelanggan = 0;
+                           $resultPelanggan = mysqli_query($koneksi, "SELECT COUNT(*) as count FROM pelanggan");
+                           if ($resultPelanggan) {
+                              $dataPelanggan = mysqli_fetch_assoc($resultPelanggan);
+                              $totalPelanggan = $dataPelanggan['count'] ?? 0;
+                           }
                            echo $totalPelanggan;
                            ?>
                         </h4>
                      </div>
 
                      <?php
-                     $pelangganSebelumnya = 100; // Misalnya, jumlah pelanggan sebelumnya
+                     // Example: Fetch previous month's customers for comparison
+                     $pelangganSebelumnya = 0; // Placeholder - Needs real data calculation if desired
+                     // Example:
+                     // $bulanSebelumnya = date('m', strtotime('-1 month'));
+                     // $tahunSebelumnya = date('Y', strtotime('-1 month'));
+                     // $queryPelangganSebelumnya = "SELECT COUNT(*) as count FROM pelanggan WHERE MONTH(created_at) = $bulanSebelumnya AND YEAR(created_at) = $tahunSebelumnya"; // Assuming a 'created_at' column
 
-                     // Perhitungan persentase perubahan yang benar:
-                     // Jika pelangganSebelumnya = 0, hindari pembagian dengan nol
-                     if ($pelangganSebelumnya == 0) {
-                        $persentasePerubahan = $totalPelanggan > 0 ? 100 : 0;
-                     } else {
-                        $persentasePerubahan = (($totalPelanggan - $pelangganSebelumnya) / abs($pelangganSebelumnya)) * 100;
+
+                     // Perhitungan persentase perubahan pelanggan
+                     $persentasePerubahanPelanggan = 0;
+                     if ($pelangganSebelumnya > 0) {
+                        $persentasePerubahanPelanggan = (($totalPelanggan - $pelangganSebelumnya) / $pelangganSebelumnya) * 100;
+                     } elseif ($totalPelanggan > 0 && $pelangganSebelumnya == 0) {
+                        $persentasePerubahanPelanggan = 100; // Indicate increase if prev was 0
                      }
 
-                     $warna = $persentasePerubahan >= 0 ? 'success' : 'error';
-                     $ikon = $persentasePerubahan >= 0 ? 'M5.56462 1.62393C5.70193 1.47072 5.90135 1.37432 6.12329 1.37432C6.1236 1.37432 6.12391 1.37432 6.12422 1.37432C6.31631 1.37415 6.50845 1.44731 6.65505 1.59381L9.65514 4.5918C9.94814 4.88459 9.94831 5.35947 9.65552 5.65246C9.36273 5.94546 8.88785 5.94562 8.59486 5.65283L6.87329 3.93247L6.87329 10.125C6.87329 10.5392 6.53751 10.875 6.12329 10.875C5.70908 10.875 5.37329 10.5392 5.37329 10.125L5.37329 3.93578L3.65516 5.65282C3.36218 5.94562 2.8873 5.94547 2.5945 5.65248C2.3017 5.35949 2.30185 4.88462 2.59484 4.59182L5.56462 1.62393Z' : 'M5.31462 10.3761C5.45194 10.5293 5.65136 10.6257 5.87329 10.6257C5.8736 10.6257 5.8739 10.6257 5.87421 10.6257C6.0663 10.6259 6.25845 10.5527 6.40505 10.4062L9.40514 7.4082C9.69814 7.11541 9.69831 6.64054 9.40552 6.34754C9.11273 6.05454 8.63785 6.05438 8.34486 6.34717L6.62329 8.06753L6.62329 1.875C6.62329 1.46079 6.28751 1.125 5.87329 1.125C5.45908 1.125 5.12329 1.46079 5.12329 1.875L5.12329 8.06422L3.40516 6.34719C3.11218 6.05439 2.6373 6.05454 2.3445 6.34752C2.0517 6.64051 2.05185 7.11538 2.34484 7.40818L5.31462 10.3761Z';
+
+                     $warnaPelanggan = $persentasePerubahanPelanggan >= 0 ? 'success' : 'error';
+                     $ikonPelanggan = $persentasePerubahanPelanggan >= 0 ? 'M5.56462 1.62393C5.70193 1.47072 5.90135 1.37432 6.12329 1.37432C6.1236 1.37432 6.12391 1.37432 6.12422 1.37432C6.31631 1.37415 6.50845 1.44731 6.65505 1.59381L9.65514 4.5918C9.94814 4.88459 9.94831 5.35947 9.65552 5.65246C9.36273 5.94546 8.88785 5.94562 8.59486 5.65283L6.87329 3.93247L6.87329 10.125C6.87329 10.5392 6.53751 10.875 6.12329 10.875C5.70908 10.875 5.37329 10.5392 5.37329 10.125L5.37329 3.93578L3.65516 5.65282C3.36218 5.94562 2.8873 5.94547 2.5945 5.65248C2.3017 5.35949 2.30185 4.88462 2.59484 4.59182L5.56462 1.62393Z' : 'M5.31462 10.3761C5.45194 10.5293 5.65136 10.6257 5.87329 10.6257C5.8736 10.6257 5.8739 10.6257 5.87421 10.6257C6.0663 10.6259 6.25845 10.5527 6.40505 10.4062L9.40514 7.4082C9.69814 7.11541 9.69831 6.64054 9.40552 6.34754C9.11273 6.05454 8.63785 6.05438 8.34486 6.34717L6.62329 8.06753L6.62329 1.875C6.62329 1.46079 6.28751 1.125 5.87329 1.125C5.45908 1.125 5.12329 1.46079 5.12329 1.875L5.12329 8.06422L3.40516 6.34719C3.11218 6.05439 2.6373 6.05454 2.3445 6.34752C2.0517 6.64051 2.05185 7.11538 2.34484 7.40818L5.31462 10.3761Z';
                      ?>
 
                      <span
-                        class="flex items-center gap-1 rounded-full bg-<?= $warna ?>-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-<?= $warna ?>-600 dark:bg-<?= $warna ?>-500/15 dark:text-<?= $warna ?>-500">
+                        class="flex items-center gap-1 rounded-full bg-<?= $warnaPelanggan ?>-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-<?= $warnaPelanggan ?>-600 dark:bg-<?= $warnaPelanggan ?>-500/15 dark:text-<?= $warnaPelanggan ?>-500">
                         <svg
                            class="fill-current"
                            width="12"
@@ -63,13 +143,15 @@
                            <path
                               fill-rule="evenodd"
                               clip-rule="evenodd"
-                              d="<?= $ikon ?>"
+                              d="<?= $ikonPelanggan ?>"
                               fill="" />
                         </svg>
-
-                        <?php
-                        echo number_format($persentasePerubahan, 2) . '%';
-                        ?>
+                        <!-- Only show percentage if comparison data exists -->
+                        <?php if ($pelangganSebelumnya != 0 || $totalPelanggan > 0): ?>
+                           <?= number_format(abs($persentasePerubahanPelanggan), 2) ?>%
+                        <?php else: ?>
+                           - % <!-- Placeholder if no data -->
+                        <?php endif; ?>
                      </span>
                   </div>
                </div>
@@ -97,31 +179,41 @@
 
                   <div class="mt-5 flex items-end justify-between">
                      <div>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">Penjualan</span>
+                        <span class="text-sm text-gray-500 dark:text-gray-400">Penjualan (Bulan Ini)</span>
                         <h4
                            class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">
                            <?php
-                           $totalpenjualan = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM penjualan"));
-                           echo $totalpenjualan;
+                           // Fetch total sales count for the current month
+                           $totalPenjualanCount = 0;
+                           $resultPenjualanCount = mysqli_query($koneksi, "SELECT COUNT(*) as count FROM penjualan WHERE MONTH(tanggal_penjualan) = MONTH(CURDATE()) AND YEAR(tanggal_penjualan) = YEAR(CURDATE())");
+                           if ($resultPenjualanCount) {
+                              $dataPenjualanCount = mysqli_fetch_assoc($resultPenjualanCount);
+                              $totalPenjualanCount = $dataPenjualanCount['count'] ?? 0;
+                           }
+                           echo $totalPenjualanCount;
                            ?> </h4>
                      </div>
 
                      <?php
-                     $penjualanSebelumnya = 100; // Misalnya, jumlah penjualan sebelumnya
+                     // Example: Fetch previous month's sales count for comparison
+                     $penjualanSebelumnyaCount = 0; // Placeholder - Needs real data calculation if desired
+                     // Example:
+                     // $queryPenjualanSebelumnyaCount = "SELECT COUNT(*) as count FROM penjualan WHERE MONTH(tanggal_penjualan) = $bulanSebelumnya AND YEAR(tanggal_penjualan) = $tahunSebelumnya";
 
-                     // Perhitungan persentase perubahan yang benar:
-                     if ($penjualanSebelumnya == 0) {
-                        $persentasePerubahan = $totalpenjualan > 0 ? 100 : 0;
-                     } else {
-                        $persentasePerubahan = (($totalpenjualan - $penjualanSebelumnya) / abs($penjualanSebelumnya)) * 100;
+                     // Perhitungan persentase perubahan penjualan count
+                     $persentasePerubahanPenjualan = 0;
+                     if ($penjualanSebelumnyaCount > 0) {
+                        $persentasePerubahanPenjualan = (($totalPenjualanCount - $penjualanSebelumnyaCount) / $penjualanSebelumnyaCount) * 100;
+                     } elseif ($totalPenjualanCount > 0 && $penjualanSebelumnyaCount == 0) {
+                        $persentasePerubahanPenjualan = 100;
                      }
 
-                     $warna = $persentasePerubahan >= 0 ? 'success' : 'error';
-                     $ikon = $persentasePerubahan >= 0 ? 'M5.56462 1.62393C5.70193 1.47072 5.90135 1.37432 6.12329 1.37432C6.1236 1.37432 6.12391 1.37432 6.12422 1.37432C6.31631 1.37415 6.50845 1.44731 6.65505 1.59381L9.65514 4.5918C9.94814 4.88459 9.94831 5.35947 9.65552 5.65246C9.36273 5.94546 8.88785 5.94562 8.59486 5.65283L6.87329 3.93247L6.87329 10.125C6.87329 10.5392 6.53751 10.875 6.12329 10.875C5.70908 10.875 5.37329 10.5392 5.37329 10.125L5.37329 3.93578L3.65516 5.65282C3.36218 5.94562 2.8873 5.94547 2.5945 5.65248C2.3017 5.35949 2.30185 4.88462 2.59484 4.59182L5.56462 1.62393Z' : 'M5.31462 10.3761C5.45194 10.5293 5.65136 10.6257 5.87329 10.6257C5.8736 10.6257 5.8739 10.6257 5.87421 10.6257C6.0663 10.6259 6.25845 10.5527 6.40505 10.4062L9.40514 7.4082C9.69814 7.11541 9.69831 6.64054 9.40552 6.34754C9.11273 6.05454 8.63785 6.05438 8.34486 6.34717L6.62329 8.06753L6.62329 1.875C6.62329 1.46079 6.28751 1.125 5.87329 1.125C5.45908 1.125 5.12329 1.46079 5.12329 1.875L5.12329 8.06422L3.40516 6.34719C3.11218 6.05439 2.6373 6.05454 2.3445 6.34752C2.0517 6.64051 2.05185 7.11538 2.34484 7.40818L5.31462 10.3761Z';
+                     $warnaPenjualan = $persentasePerubahanPenjualan >= 0 ? 'success' : 'error';
+                     $ikonPenjualan = $persentasePerubahanPenjualan >= 0 ? 'M5.56462 1.62393C5.70193 1.47072 5.90135 1.37432 6.12329 1.37432C6.1236 1.37432 6.12391 1.37432 6.12422 1.37432C6.31631 1.37415 6.50845 1.44731 6.65505 1.59381L9.65514 4.5918C9.94814 4.88459 9.94831 5.35947 9.65552 5.65246C9.36273 5.94546 8.88785 5.94562 8.59486 5.65283L6.87329 3.93247L6.87329 10.125C6.87329 10.5392 6.53751 10.875 6.12329 10.875C5.70908 10.875 5.37329 10.5392 5.37329 10.125L5.37329 3.93578L3.65516 5.65282C3.36218 5.94562 2.8873 5.94547 2.5945 5.65248C2.3017 5.35949 2.30185 4.88462 2.59484 4.59182L5.56462 1.62393Z' : 'M5.31462 10.3761C5.45194 10.5293 5.65136 10.6257 5.87329 10.6257C5.8736 10.6257 5.8739 10.6257 5.87421 10.6257C6.0663 10.6259 6.25845 10.5527 6.40505 10.4062L9.40514 7.4082C9.69814 7.11541 9.69831 6.64054 9.40552 6.34754C9.11273 6.05454 8.63785 6.05438 8.34486 6.34717L6.62329 8.06753L6.62329 1.875C6.62329 1.46079 6.28751 1.125 5.87329 1.125C5.45908 1.125 5.12329 1.46079 5.12329 1.875L5.12329 8.06422L3.40516 6.34719C3.11218 6.05439 2.6373 6.05454 2.3445 6.34752C2.0517 6.64051 2.05185 7.11538 2.34484 7.40818L5.31462 10.3761Z';
                      ?>
 
                      <span
-                        class="flex items-center gap-1 rounded-full bg-<?= $warna ?>-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-<?= $warna ?>-600 dark:bg-<?= $warna ?>-500/15 dark:text-<?= $warna ?>-500">
+                        class="flex items-center gap-1 rounded-full bg-<?= $warnaPenjualan ?>-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-<?= $warnaPenjualan ?>-600 dark:bg-<?= $warnaPenjualan ?>-500/15 dark:text-<?= $warnaPenjualan ?>-500">
                         <svg
                            class="fill-current"
                            width="12"
@@ -132,13 +224,14 @@
                            <path
                               fill-rule="evenodd"
                               clip-rule="evenodd"
-                              d="<?= $ikon ?>"
+                              d="<?= $ikonPenjualan ?>"
                               fill="" />
                         </svg>
-
-                        <?php
-                        echo number_format($persentasePerubahan, 2) . '%';
-                        ?>
+                        <?php if ($penjualanSebelumnyaCount != 0 || $totalPenjualanCount > 0): ?>
+                           <?= number_format(abs($persentasePerubahanPenjualan), 2) ?>%
+                        <?php else: ?>
+                           - % <!-- Placeholder -->
+                        <?php endif; ?>
                      </span>
                   </div>
                </div>
@@ -151,7 +244,7 @@
                class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
                <div class="flex items-center justify-between">
                   <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                     Monthly Sales
+                     Penjualan Bulanan (<?= $tahunSekarang ?>) <!-- Updated Title -->
                   </h3>
 
                   <div x-data="{openDropDown: false}" class="relative h-fit">
@@ -191,7 +284,7 @@
                <div class="max-w-full overflow-x-auto custom-scrollbar">
                   <div class="-ml-5 min-w-[650px] pl-2 xl:min-w-full">
                      <div
-                        id="chartOne"
+                        id="chartOneDynamic"
                         class="-ml-5 h-full min-w-[650px] pl-2 xl:min-w-full"></div>
                   </div>
                </div>
@@ -207,54 +300,16 @@
                   <div class="flex justify-between">
                      <div>
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                           Monthly Target
+                           Target Bulanan
                         </h3>
                         <p class="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">
-                           Target you’ve set for each month
+                           Target yang Anda tetapkan untuk setiap bulan
                         </p>
-                     </div>
-                     <div x-data="{openDropDown: false}" class="relative h-fit">
-                        <button
-                           @click="openDropDown = !openDropDown"
-                           :class="openDropDown ? 'text-gray-700 dark:text-white' : 'text-gray-400 hover:text-gray-700 dark:hover:text-white'">
-                           <svg
-                              class="fill-current"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                 fill-rule="evenodd"
-                                 clip-rule="evenodd"
-                                 d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-                                 fill="" />
-                           </svg>
-                        </button>
-                        <div
-                           x-show="openDropDown"
-                           @click.outside="openDropDown = false"
-                           class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-2xl border border-gray-200 bg-white p-2 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
-                           <button
-                              class="flex w-full rounded-lg px-3 py-2 text-left text-theme-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                              View More
-                           </button>
-                           <button
-                              class="flex w-full rounded-lg px-3 py-2 text-left text-theme-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                              Delete
-                           </button>
-                        </div>
                      </div>
                   </div>
                   <div class="relative max-h-[195px]">
-                     <div id="chartTwo" class="h-full"></div>
-                     <span
-                        class="absolute left-1/2 top-[85%] -translate-x-1/2 -translate-y-[85%] rounded-full bg-success-50 px-3 py-1 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">+10%</span>
+                     <canvas id="chartTwoDynamic" class="h-full"></canvas>
                   </div>
-                  <p
-                     class="mx-auto mt-1.5 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
-                     You earn $3287 today, it's higher than last month. Keep up your good work!
-                  </p>
                </div>
 
                <div
@@ -266,7 +321,7 @@
                      </p>
                      <p
                         class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-                        $20K
+                        Rp <?= number_format($targetBulanan, 0, ',', '.') ?>
                         <svg
                            width="16"
                            height="16"
@@ -287,11 +342,11 @@
                   <div>
                      <p
                         class="mb-1 text-center text-theme-xs text-gray-500 dark:text-gray-400 sm:text-sm">
-                        Revenue
+                        Pendapatan (Bulan Ini)
                      </p>
                      <p
                         class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-                        $20K
+                        Rp <?= number_format($totalPenjualanBulanan, 0, ',', '.') ?>
                         <svg
                            width="16"
                            height="16"
@@ -312,11 +367,11 @@
                   <div>
                      <p
                         class="mb-1 text-center text-theme-xs text-gray-500 dark:text-gray-400 sm:text-sm">
-                        Today
+                        Hari Ini
                      </p>
                      <p
                         class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-                        $20K
+                        Rp <?= number_format($totalPenjualanHariIni, 0, ',', '.') ?>
                         <svg
                            width="16"
                            height="16"
@@ -346,7 +401,7 @@
                         Statistics
                      </h3>
                      <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-                        Target you’ve set for each month
+                        Target you've set for each month
                      </p>
                   </div>
 
@@ -405,444 +460,192 @@
             </div>
             <!-- ====== Chart Three End -->
          </div>
-
-         <div class="col-span-12 xl:col-span-5">
-            <!-- ====== Map One Start -->
-            <div
-               class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
-               <div class="flex justify-between">
-                  <div>
-                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                        Customers Demographic
-                     </h3>
-                     <p class="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">
-                        Number of customer based on country
-                     </p>
-                  </div>
-
-                  <div x-data="{openDropDown: false}" class="relative h-fit">
-                     <button
-                        @click="openDropDown = !openDropDown"
-                        :class="openDropDown ? 'text-gray-700 dark:text-white' : 'text-gray-400 hover:text-gray-700 dark:hover:text-white'">
-                        <svg
-                           class="fill-current"
-                           width="24"
-                           height="24"
-                           viewBox="0 0 24 24"
-                           fill="none"
-                           xmlns="http://www.w3.org/2000/svg">
-                           <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-                              fill="" />
-                        </svg>
-                     </button>
-                     <div
-                        x-show="openDropDown"
-                        @click.outside="openDropDown = false"
-                        class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-2xl border border-gray-200 bg-white p-2 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
-                        <button
-                           class="flex w-full rounded-lg px-3 py-2 text-left text-theme-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                           View More
-                        </button>
-                        <button
-                           class="flex w-full rounded-lg px-3 py-2 text-left text-theme-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                           Delete
-                        </button>
-                     </div>
-                  </div>
-               </div>
-               <div
-                  class="border-gary-200 my-6 overflow-hidden rounded-2xl border bg-gray-50 px-4 py-6 dark:border-gray-800 dark:bg-gray-900 sm:px-6">
-                  <div
-                     id="mapOne"
-                     class="mapOne map-btn -mx-4 -my-6 h-[212px] w-[252px] 2xsm:w-[307px] xsm:w-[358px] sm:-mx-6 md:w-[668px] lg:w-[634px] xl:w-[393px] 2xl:w-[554px]"></div>
-               </div>
-
-               <div class="space-y-5">
-                  <div class="flex items-center justify-between">
-                     <div class="flex items-center gap-3">
-                        <div class="w-full max-w-8 items-center rounded-full">
-                           <img src="src/images/country/country-01.svg" alt="usa" />
-                        </div>
-                        <div>
-                           <p
-                              class="text-theme-sm font-semibold text-gray-800 dark:text-white/90">
-                              USA
-                           </p>
-                           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
-                              2,379 Customers
-                           </span>
-                        </div>
-                     </div>
-
-                     <div class="flex w-full max-w-[140px] items-center gap-3">
-                        <div
-                           class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
-                           <div
-                              class="absolute left-0 top-0 flex h-full w-[79%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"></div>
-                        </div>
-                        <p class="text-theme-sm font-medium text-gray-800 dark:text-white/90">
-                           79%
-                        </p>
-                     </div>
-                  </div>
-
-                  <div class="flex items-center justify-between">
-                     <div class="flex items-center gap-3">
-                        <div class="w-full max-w-8 items-center rounded-full">
-                           <img src="src/images/country/country-02.svg" alt="france" />
-                        </div>
-                        <div>
-                           <p
-                              class="text-theme-sm font-semibold text-gray-800 dark:text-white/90">
-                              France
-                           </p>
-                           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
-                              589 Customers
-                           </span>
-                        </div>
-                     </div>
-
-                     <div class="flex w-full max-w-[140px] items-center gap-3">
-                        <div
-                           class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
-                           <div
-                              class="absolute left-0 top-0 flex h-full w-[23%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"></div>
-                        </div>
-                        <p class="text-theme-sm font-medium text-gray-800 dark:text-white/90">
-                           23%
-                        </p>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            <!-- ====== Map One End -->
-         </div>
-
-         <div class="col-span-12 xl:col-span-7">
-            <!-- ====== Table One Start -->
-            <div
-               class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
-               <div
-                  class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                        Recent Orders
-                     </h3>
-                  </div>
-
-                  <div class="flex items-center gap-3">
-                     <button
-                        class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-                        <svg
-                           class="stroke-current fill-white dark:fill-gray-800"
-                           width="20"
-                           height="20"
-                           viewBox="0 0 20 20"
-                           fill="none"
-                           xmlns="http://www.w3.org/2000/svg">
-                           <path
-                              d="M2.29004 5.90393H17.7067"
-                              stroke=""
-                              stroke-width="1.5"
-                              stroke-linecap="round"
-                              stroke-linejoin="round" />
-                           <path
-                              d="M17.7075 14.0961H2.29085"
-                              stroke=""
-                              stroke-width="1.5"
-                              stroke-linecap="round"
-                              stroke-linejoin="round" />
-                           <path
-                              d="M12.0826 3.33331C13.5024 3.33331 14.6534 4.48431 14.6534 5.90414C14.6534 7.32398 13.5024 8.47498 12.0826 8.47498C10.6627 8.47498 9.51172 7.32398 9.51172 5.90415C9.51172 4.48432 10.6627 3.33331 12.0826 3.33331Z"
-                              fill=""
-                              stroke=""
-                              stroke-width="1.5" />
-                           <path
-                              d="M7.91745 11.525C6.49762 11.525 5.34662 12.676 5.34662 14.0959C5.34661 15.5157 6.49762 16.6667 7.91745 16.6667C9.33728 16.6667 10.4883 15.5157 10.4883 14.0959C10.4883 12.676 9.33728 11.525 7.91745 11.525Z"
-                              fill=""
-                              stroke=""
-                              stroke-width="1.5" />
-                        </svg>
-
-                        Filter
-                     </button>
-
-                     <button
-                        class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-                        See all
-                     </button>
-                  </div>
-               </div>
-
-               <div class="w-full overflow-x-auto">
-                  <table class="min-w-full">
-                     <!-- table header start -->
-                     <thead>
-                        <tr class="border-gray-100 border-y dark:border-gray-800">
-                           <th class="py-3">
-                              <div class="flex items-center">
-                                 <p
-                                    class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                    Products
-                                 </p>
-                              </div>
-                           </th>
-                           <th class="py-3">
-                              <div class="flex items-center">
-                                 <p
-                                    class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                    Category
-                                 </p>
-                              </div>
-                           </th class="py-3">
-                           <th class="py-3">
-                              <div class="flex items-center">
-                                 <p
-                                    class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                    Price
-                                 </p>
-                              </div>
-                           </th>
-                           <th class="py-3">
-                              <div class="flex items-center col-span-2">
-                                 <p
-                                    class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                    Status
-                                 </p>
-                              </div>
-                           </th>
-                        </tr>
-                     </thead>
-                     <!-- table header end -->
-
-                     <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                        <tr>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <div class="flex items-center gap-3">
-                                    <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                                       <img src="src/images/product/product-01.jpg" alt="Product" />
-                                    </div>
-                                    <div>
-                                       <p
-                                          class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                          Macbook pro 13”
-                                       </p>
-                                       <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                                          2 Variants
-                                       </span>
-                                    </div>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                    Laptop
-                                 </p>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                    $2399.00
-                                 </p>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p
-                                    class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
-                                    Delivered
-                                 </p>
-                              </div>
-                           </td>
-                        </tr>
-                        <!-- table item -->
-                        <tr>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <div class="flex items-center gap-3">
-                                    <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                                       <img src="src/images/product/product-02.jpg" alt="Product" />
-                                    </div>
-                                    <div>
-                                       <p
-                                          class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                          Apple Watch Ultra
-                                       </p>
-                                       <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                                          1 Variants
-                                       </span>
-                                    </div>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                    Watch
-                                 </p>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                    $879.00
-                                 </p>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p
-                                    class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
-                                    Pending
-                                 </p>
-                              </div>
-                           </td>
-                        </tr>
-
-                        <!-- table item -->
-                        <tr>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <div class="flex items-center gap-3">
-                                    <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                                       <img src="src/images/product/product-03.jpg" alt="Product" />
-                                    </div>
-                                    <div>
-                                       <p
-                                          class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                          iPhone 15 Pro Max
-                                       </p>
-                                       <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                                          2 Variants
-                                       </span>
-                                    </div>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                    SmartPhone
-                                 </p>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                    $1869.00
-                                 </p>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p
-                                    class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
-                                    Delivered
-                                 </p>
-                              </div>
-                           </td>
-                        </tr>
-
-                        <!-- table item -->
-                        <tr>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <div class="flex items-center gap-3">
-                                    <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                                       <img src="src/images/product/product-04.jpg" alt="Product" />
-                                    </div>
-                                    <div>
-                                       <p
-                                          class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                          iPad Pro 3rd Gen
-                                       </p>
-                                       <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                                          2 Variants
-                                       </span>
-                                    </div>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                    Electronics
-                                 </p>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                    $1699.00
-                                 </p>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p
-                                    class="rounded-full bg-error-50 px-2 py-0.5 text-theme-xs font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500">
-                                    Canceled
-                                 </p>
-                              </div>
-                           </td>
-                        </tr>
-
-                        <!-- table item -->
-                        <tr>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <div class="flex items-center gap-3">
-                                    <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                                       <img src="src/images/product/product-05.jpg" alt="Product" />
-                                    </div>
-                                    <div>
-                                       <p
-                                          class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                          Airpods Pro 2nd Gen
-                                       </p>
-                                       <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                                          1 Variants
-                                       </span>
-                                    </div>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                    Accessories
-                                 </p>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                    $240.00
-                                 </p>
-                              </div>
-                           </td>
-                           <td class="py-3">
-                              <div class="flex items-center">
-                                 <p
-                                    class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-500">
-                                    Delivered
-                                 </p>
-                              </div>
-                           </td>
-                        </tr>
-                        <!-- table body end -->
-                     </tbody>
-                  </table>
-               </div>
-            </div>
-            <!-- ====== Table One End -->
-         </div>
       </div>
    </div>
+
+   <!-- Script untuk membuat chart Chart.js secara dinamis -->
+   <script>
+      window.addEventListener('load', function() {
+         // Gunakan variabel PHP yang sudah dihitung di awal home.php
+         <?php
+         $jsPercentage = is_numeric($persentasePencapaian) ? $persentasePencapaian : 0;
+         $jsPercentageClamped = max(0, min(100, $jsPercentage));
+         $sisaPercentage = 100 - $jsPercentageClamped;
+         // Pastikan sisa tidak negatif jika Clamp > 100 (seharusnya tidak terjadi karena clamp)
+         $sisaPercentage = max(0, $sisaPercentage);
+         ?>
+
+         // Targetkan ID baru
+         var ctx = document.getElementById('chartTwoDynamic'); // Targetkan ID baru
+
+         if (ctx) {
+            // Pastikan library Chart.js tersedia
+            if (typeof Chart !== 'undefined') {
+               try {
+                  // Buat instance chart Chart.js baru
+                  var myChart = new Chart(ctx.getContext('2d'), {
+                     type: 'doughnut',
+                     data: {
+                        labels: ['Pencapaian', 'Sisa Target'],
+                        datasets: [{
+                           // Gunakan persentase dinamis & sisanya
+                           data: [<?= json_encode($jsPercentageClamped) ?>, <?= json_encode($sisaPercentage) ?>],
+                           backgroundColor: [
+                              '#465FFF', // Warna pencapaian (biru template)
+                              '#E4E7EC' // Warna sisa (abu-abu template)
+                           ],
+                           borderColor: [
+                              '#ffffff', // Warna border
+                              '#ffffff'
+                           ],
+                           borderWidth: 1
+                        }]
+                     },
+                     options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Penting agar chart mengisi tinggi div
+                        cutout: '75%', // Sesuaikan ketebalan doughnut
+                        plugins: {
+                           legend: {
+                              display: false // Sembunyikan legenda bawaan
+                           },
+                           tooltip: {
+                              enabled: true // Aktifkan tooltip saat hover
+                           }
+                        }
+                     }
+                  });
+               } catch (e) {
+                  console.error("Error rendering dynamic Chart.js #chartTwoDynamic:", e);
+               }
+            } else {
+               console.error("Chart.js library not found for dynamic chart creation.");
+            }
+         } else {
+            console.warn("Element #chartTwoDynamic not found for Chart.js initialization.");
+         }
+      });
+   </script>
+
+   <!-- Script untuk membuat chart ApexCharts secara dinamis -->
+   <script>
+      // --- Script untuk Chart Batang (Penjualan per Bulan) ---
+      window.addEventListener('load', function() {
+         <?php
+         // Ambil data dari PHP
+         $jsDataSeries = json_encode($dataSeriesChartBatang);
+         $jsBulanLabels = json_encode($bulanLabels);
+         ?>
+
+         var chartOneOptions = {
+            series: [{
+               name: "Penjualan", // Ubah nama series jika perlu
+               data: <?= $jsDataSeries ?> // Gunakan data dinamis
+            }],
+            colors: ["#465fff"], // Warna dari template
+            chart: {
+               fontFamily: "Outfit, sans-serif",
+               type: "bar",
+               height: 310, // Sesuaikan tinggi jika perlu (lebih tinggi dari chart lingkaran)
+               toolbar: {
+                  show: false
+               }
+            },
+            plotOptions: {
+               bar: {
+                  horizontal: false,
+                  columnWidth: "55%", // Sesuaikan lebar kolom jika perlu
+                  borderRadius: 5,
+                  borderRadiusApplication: "end"
+               }
+            },
+            dataLabels: {
+               enabled: false
+            },
+            stroke: {
+               show: true,
+               width: 4,
+               colors: ["transparent"]
+            },
+            xaxis: {
+               categories: <?= $jsBulanLabels ?>, // Gunakan label bulan dinamis
+               axisBorder: {
+                  show: false
+               },
+               axisTicks: {
+                  show: false
+               }
+            },
+            legend: {
+               show: true,
+               position: "top",
+               horizontalAlign: "left",
+               fontFamily: "Outfit",
+               markers: {
+                  radius: 99
+               }
+            },
+            yaxis: {
+               title: false,
+               labels: {
+                  // Formatter untuk menampilkan nilai Rupiah
+                  formatter: function(value) {
+                     // Format sederhana, bisa disesuaikan
+                     if (value >= 1000000) {
+                        return "Rp " + (value / 1000000).toFixed(1).replace('.', ',') + ' Jt';
+                     } else if (value >= 1000) {
+                        return "Rp " + (value / 1000).toFixed(0) + ' Ribu';
+                     } else {
+                        return "Rp " + value;
+                     }
+                  }
+               }
+            },
+            grid: {
+               yaxis: {
+                  lines: {
+                     show: true // Tampilkan garis horizontal grid
+                  }
+               }
+            },
+            fill: {
+               opacity: 1
+            },
+            tooltip: {
+               x: {
+                  show: true // Tampilkan bulan di tooltip
+               },
+               y: {
+                  formatter: function formatter(val) {
+                     // Format tooltip sebagai Rupiah penuh
+                     return "Rp " + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                  },
+                  title: {
+                     formatter: function(seriesName) {
+                        return seriesName + ':'
+                     }
+                  }
+               }
+            }
+         };
+
+         // Targetkan ID baru
+         var chartSelectorOne = document.querySelector("#chartOneDynamic");
+
+         if (chartSelectorOne) {
+            if (typeof ApexCharts !== 'undefined') {
+               var chartOne = new ApexCharts(chartSelectorOne, chartOneOptions);
+               try {
+                  chartOne.render();
+               } catch (e) {
+                  console.error("Error rendering dynamic ApexChart #chartOneDynamic:", e);
+               }
+            } else {
+               console.error("ApexCharts library not found for dynamic chart #chartOne.");
+            }
+         } else {
+            console.warn("Element #chartOneDynamic not found for chart initialization.");
+         }
+      });
+   </script>
 </main>

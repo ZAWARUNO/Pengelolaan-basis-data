@@ -46,6 +46,10 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
   </title>
   <link rel="icon" href="favicon.ico">
   <link href="style.css" rel="stylesheet">
+  <!-- Hapus script ApexCharts dari CDN -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> -->
+  <!-- Tambahkan Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body
@@ -188,15 +192,15 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
               </li>
               <!-- Menu Item Dashboard -->
 
-              <!-- Menu Item Calendar -->
+              <!-- Menu Item Pelanggan -->
               <li>
                 <a
-                  href="?page=produk"
-                  @click="selected = (selected === 'produk' ? '':'produk')"
+                  href="?page=pelanggan"
+                  @click="selected = (selected === 'pelanggan' ? '' : 'pelanggan')"
                   class="menu-item group"
-                  :class=" (selected === 'produk') && (page === 'produk') ? 'menu-item-active' : 'menu-item-inactive'">
+                  :class="(selected === 'pelanggan') && (page === 'pelanggan') ? 'menu-item-active' : 'menu-item-inactive'">
                   <svg
-                    :class="(selected === 'produk') && (page === 'produk') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
+                    :class="(selected === 'pelanggan') && (page === 'pelanggan') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
@@ -205,10 +209,34 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
                     <path
                       fill-rule="evenodd"
                       clip-rule="evenodd"
-                      d="M8 2C8.41421 2 8.75 2.33579 8.75 2.75V3.75H15.25V2.75C15.25 2.33579 15.5858 2 16 2C16.4142 2 16.75 2.33579 16.75 2.75V3.75H18.5C19.7426 3.75 20.75 4.75736 20.75 6V9V19C20.75 20.2426 19.7426 21.25 18.5 21.25H5.5C4.25736 21.25 3.25 20.2426 3.25 19V9V6C3.25 4.75736 4.25736 3.75 5.5 3.75H7.25V2.75C7.25 2.33579 7.58579 2 8 2ZM8 5.25H5.5C5.08579 5.25 4.75 5.58579 4.75 6V8.25H19.25V6C19.25 5.58579 18.9142 5.25 18.5 5.25H16H8ZM19.25 9.75H4.75V19C4.75 19.4142 5.08579 19.75 5.5 19.75H18.5C18.9142 19.75 19.25 19.4142 19.25 19V9.75Z"
+                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
                       fill="" />
                   </svg>
-
+                  <span
+                    class="menu-item-text"
+                    :class="sidebarToggle ? 'lg:hidden' : ''">
+                    Pelanggan
+                  </span>
+                </a>
+              </li>
+              <!-- Menu Item Produk -->
+              <li>
+                <a
+                  href="?page=produk"
+                  @click="selected = (selected === 'produk' ? '' : 'produk')"
+                  class="menu-item group"
+                  :class="(selected === 'produk') && (page === 'produk') ? 'menu-item-active' : 'menu-item-inactive'">
+                  <svg
+                    :class="(selected === 'produk') && (page === 'produk') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M21 16V8a2 2 0 00-1-1.73l-8-4.62a2 2 0 00-2 0L3 6.27A2 2 0 002 8v8a2 2 0 001 1.73l8 4.62a2 2 0 002 0l8-4.62A2 2 0 0021 16z"
+                      fill="" />
+                  </svg>
                   <span
                     class="menu-item-text"
                     :class="sidebarToggle ? 'lg:hidden' : ''">
@@ -216,78 +244,33 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
                   </span>
                 </a>
               </li>
-              <!-- Menu Item Calendar -->
-
+              <!-- Menu Item Pembelian -->
               <li>
                 <a
-                  href="#"
-                  @click.prevent="selected = (selected === 'Pelanggan' ? '':'Pelanggan')"
+                  href="?page=pembelian"
+                  @click="selected = (selected === 'pembelian' ? '' : 'pembelian')"
                   class="menu-item group"
-                  :class="(selected === 'Pelanggan') || (page === 'pelanggan' || page === 'pembelian') ? 'menu-item-active' : 'menu-item-inactive'">
+                  :class="(selected === 'pembelian') && (page === 'pembelian') ? 'menu-item-active' : 'menu-item-inactive'">
                   <svg
-                    :class="(selected === 'Pelanggan') || (page === 'pelanggan' || page === 'pembelian') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
+                    :class="(selected === 'pembelian') && (page === 'pembelian') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg">
                     <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
-                      fill="" />
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.33 2.67A1 1 0 005 17h12v-2H7"
+                      stroke="" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
-
                   <span
                     class="menu-item-text"
                     :class="sidebarToggle ? 'lg:hidden' : ''">
-                    Pelanggan
+                    Pembelian
                   </span>
-
-                  <svg
-                    class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current"
-                    :class="[(selected === 'Pelanggan') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : '' ]"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585"
-                      stroke=""
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round" />
-                  </svg>
                 </a>
-
-                <!-- Dropdown Menu Start -->
-                <div
-                  class="overflow-hidden transform translate"
-                  :class="(selected === 'Pelanggan') ? 'block' :'hidden'">
-                  <ul
-                    :class="sidebarToggle ? 'lg:hidden' : 'flex'"
-                    class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
-                    <li>
-                      <a
-                        href="?page=pelanggan"
-                        class="menu-dropdown-item group"
-                        :class="page === 'pelanggan' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                        Pelanggan
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="pembelian.php"
-                        class="menu-dropdown-item group"
-                        :class="page === 'pembelian' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                        Pembelian
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <!-- Dropdown Menu End -->
               </li>
+              <!-- Menu Item Calendar -->
+
               <!-- Menu Item Tables -->
             </ul>
           </div>
