@@ -5,7 +5,7 @@ Repo Tugas kelompok 2 Membuat sistem Pengelolaan Basis Data
   <li>M. Apriansyah</li>
   <li>Difa Bintang</li>
   <li>Farischa Arni Iskandar</li>
-  <li>Khairulnisa</li>
+  <li>Khairunisa</li>
   <li>Salsabila</li>
 </ol>
 
