@@ -3,7 +3,7 @@ Branch TEAM Flowchart
 <h2>ANGGOTA Flowchart</h2>
 <ol>
   <li>Difa Bintang</li>
-  <li>Khairulnisa</li>
+  <li>Khairunisa</li>
 </ol>
 
 ![Preview](priview.png)
