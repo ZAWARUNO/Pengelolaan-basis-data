@@ -1,7 +1,7 @@
 <?php
 if (isset($_GET['edit'])) {
     $id = $_GET['edit'];
-    $q = mysqli_query($koneksi, "SELECT * FROM pembelian WHERE id_pembelian='$id'");
+    $q = mysqli_query($koneksi, "SELECT * FROM penjualan WHERE id_penjualan='$id'");
     $editData = mysqli_fetch_assoc($q);
 }
 
@@ -12,7 +12,7 @@ if (isset($_POST['nama_pembeli'])) {
 
     $result = mysqli_query(
         $koneksi,
-        "UPDATE pembelian SET nama_pembeli='$nama', tanggal='$tanggal', total='$total' WHERE id_pembelian='$id'"
+        "UPDATE penjualan SET nama_pembeli='$nama', tanggal='$tanggal', total='$total' WHERE id_penjualan='$id'"
     );
 
     if ($result) {
@@ -84,7 +84,7 @@ if (isset($_POST['nama_pembeli'])) {
         <!-- table header start -->
         <thead>
           <tr class="border-gray-100 border-y dark:border-gray-800">
-            <th class="py-3"><div class="flex items-center"><p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Nama Pembeli</p></div></th>
+            <th class="py-3"><div class="flex items-center"><p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Penjualan</p></div></th>
             <th class="py-3"><div class="flex items-center"><p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Tanggal</p></div></th>
             <th class="py-3"><div class="flex items-center"><p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Total</p></div></th>
             <th class="py-3"><div class="flex items-center col-span-2"><p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Aksi</p></div></th>
@@ -92,30 +92,30 @@ if (isset($_POST['nama_pembeli'])) {
         </thead>
         <!-- table header end -->
         <?php
-        $query = mysqli_query($koneksi, "SELECT * FROM pembelian");
+        $query = mysqli_query($koneksi, "SELECT * FROM penjualan LEFT JOIN pelanggan ON penjualan.id_pelanggan = pelanggan.id_pelanggan");
         while ($data = mysqli_fetch_array($query)) {
         ?>
           <form method="POST" action="">
             <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
               <tr>
-                <td class="py-3"><div class="flex items-center"><p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['nama_pembeli']; ?></p></div></td>
-                <td class="py-3"><div class="flex items-center"><p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['tanggal']; ?></p></div></td>
-                <td class="py-3"><div class="flex items-center"><p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['total']; ?></p></div></td>
+                <td class="py-3"><div class="flex items-center"><p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['nama_pelanggan']; ?></p></div></td>
+                <td class="py-3"><div class="flex items-center"><p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['tanggal_penjualan']; ?></p></div></td>
+                <td class="py-3"><div class="flex items-center"><p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['total_harga']; ?></p></div></td>
                 <td class="py-3">
                   <div class="flex items-center">
                     <button
-                      onclick="window.location.href='?page=pembelian&edit=<?php echo $data['id_pembelian']; ?>'"
+                      onclick="window.location.href='?page=pembelian&edit=<?php echo $data['id_penjualan']; ?>'"
                       class="flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-warning-400 dark:bg-warning-500/15 dark:text-warning-500 px-4 py-3 font-medium text-white hover:bg-warning-500 lg:inline-flex lg:w-auto"
                       type="button">
                       <svg class="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z" fill="" />
                       </svg>
-                      Edit
+                      Detail
                     </button>
                     <button
                       class="ml-1 flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-red-400 dark:bg-error-500/15 dark:text-error-500 px-4 py-3 font-medium text-white hover:bg-red-500 lg:inline-flex lg:w-auto"
                       type="button"
-                      onclick="window.location.href='?page=pembelian_hapus&&id=<?php echo $data['id_pembelian']; ?>'">
+                      onclick="window.location.href='?page=pembelian_hapus&&id=<?php echo $data['id_penjualan']; ?>'">
                       Hapus
                     </button>
                   </div>
