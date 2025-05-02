@@ -1,18 +1,18 @@
 # Pengelolaan-basis-data
-Repo Tugas kelompok 2 Membuat sistem Pengelolaan Basis Data
-<h2>ANGGOTA</h2>
+Branch TEAM Flowchart
+<h2>ANGGOTA Flowchart</h2>
 <ol>
-  <li>M. Apriansyah</li>
   <li>Difa Bintang</li>
-  <li>Farischa Arni Iskandar</li>
   <li>Khairulnisa</li>
-  <li>Salsabila</li>
 </ol>
 
-<h2>Langkah-langkah Bergabung ke Repo</h2>
+![Preview](priview.png)
+
+
+<h2>Langkah-langkah Update Tugas Flowchart</h2>
 <ol>
-  <li>ADD Akun Saya di <a href="https://github.com/ZAWARUNO">ZAWARUNO</a></li>
-  <li>Lalu Klik link ini <a href="https://github.com/ZAWARUNO/Pengelolaan-basis-data/issues/new/choose">Issues</a></li>
-  <li>isi nama kalian agar aku bisa konfirm itu kalian</li>
-  <li>Selesai saya akan mengundang kalian silakan cek <a href="https://github.com/notifications">Notifikasi</a> selamat bergabung</li>
+  <li>Simpan Flowchart dengan nama preview dan format PNG/JPEG/GIF/SVG/WebP</li>
+  <li>Lalu Klik link ini <a href="https://github.com/ZAWARUNO/Pengelolaan-basis-data/Flowchart/">Uploud</a></li>
+  <li>Masukan File nya dan isi Form perubahan bila perlu</li>
+  <li>Selesai terima kasih kerja sama nya</li>
 </ol>
