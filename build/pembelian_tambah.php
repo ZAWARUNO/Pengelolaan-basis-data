@@ -5,17 +5,24 @@ if (isset($_POST['id_pelanggan'])) {
     $total = 0;
     $tanggal = date('Y/m/d');
 
-    $query = mysqli_query($koneksi, "INSERT INTO penjualan (tanggal_penjualan, id_pelanggan) values ('$tanggal', '$id_pelanggan')");
-    $id_terakhir = mysqli_fetch_array(mysqli_query($koneksi, "SELECT*FROM penjualan ORDER BY id_penjualan DESC"));
-    $id_penjualan = $id_terakhir['id_penjualan'];
+    $query = mysqli_query($koneksi, "INSERT INTO penjualan(tanggal_penjualan, id_pelanggan) values ('$tanggal', '$id_pelanggan')");
+    $idTerakhir = mysqli_fetch_array(mysqli_query($koneksi, "SELECT*FROM penjualan ORDER BY id_penjualan DESC"));
+    $id_penjualan = $idTerakhir['id_penjualan'];
 
-    foreach ($produk as $key => $value) {
-        $produk = mysqli_fetch_array(mysqli_query($koneksi, "SELECT*FROM produk WHERE id_produk = $key"));
+    foreach ($produk as $key=>$val) {
+        $pr = mysqli_fetch_array(mysqli_query($koneksi, "SELECT*FROM produk WHERE id_produk = $key"));
 
-        $sub_total = $value * $produk['harga'];
-        $total += $sub_total;
-        $query = mysqli_query($koneksi, "INSERT INTO detail_penjualan (id_penjualan, id_produk, jumlah_produk, sub_total ) values ('$id_penjualan', '$key', '$value', '$sub_total')");
+        if($val > 0){
+            $sub = $val * $pr['harga'];
+            $total += $sub;
+            $query = mysqli_query($koneksi, "INSERT INTO detail_penjualan(id_penjualan, id_produk, jumlah_produk, sub_total ) values ('$id_penjualan', '$key', '$val', '$sub')");
+
+            $updateProduk = mysqli_query($koneksi, "UPDATE produk SET stock = stock - $val WHERE id_produk = $key");
+        }
+
     }
+
+    $query = mysqli_query($koneksi, "UPDATE penjualan SET total_harga = $total WHERE id_penjualan = $id_penjualan");
 
     if ($query) {
         echo '<div id="successAlert" class="fixed top-4 left-0 right-0 mx-auto w-full max-w-md z-999999 rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15">
@@ -27,7 +34,10 @@ if (isset($_POST['id_pelanggan'])) {
       </div>
       <div>
         <h4 class="mb-1 text-sm font-semibold text-gray-800 dark:text-white/90">Tambah pembelian Berhasil</h4>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Penjualan ' . $produk['nama_produk'] . ' ' . $value . ' ' . $total . ' berhasil ditambahkan</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Penjualan produk ' . implode(', ', array_map(function($idProduk) use ($produk, $koneksi) {
+    $rowProduk = mysqli_fetch_array(mysqli_query($koneksi, "SELECT nama_produk FROM produk WHERE id_produk = $idProduk"));
+    return $rowProduk['nama_produk'] . ' sebanyak ' . $produk[$idProduk];
+}, array_keys($produk))) . ' dengan total ' . $total . ' berhasil ditambahkan</p>
       </div>
     </div>
   </div>

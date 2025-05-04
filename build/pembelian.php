@@ -1,22 +1,22 @@
 <?php
-if (isset($_GET['edit'])) {
-    $id = $_GET['edit'];
-    $q = mysqli_query($koneksi, "SELECT * FROM penjualan WHERE id_penjualan='$id'");
-    $editData = mysqli_fetch_assoc($q);
+if (isset($_GET['detail'])) {
+  $id = $_GET['detail'];
+  $q = mysqli_query($koneksi, "SELECT * FROM penjualan LEFT JOIN pelanggan ON penjualan.id_pelanggan = pelanggan.id_pelanggan WHERE id_penjualan='$id'");
+  $detailData = mysqli_fetch_assoc($q);
 }
 
 if (isset($_POST['nama_pembeli'])) {
-    $nama     = $_POST['nama_pembeli'];
-    $tanggal  = $_POST['tanggal'];
-    $total    = $_POST['total'];
+  $nama     = $_POST['nama_pembeli'];
+  $tanggal  = $_POST['tanggal'];
+  $total    = $_POST['total'];
 
-    $result = mysqli_query(
-        $koneksi,
-        "UPDATE penjualan SET nama_pembeli='$nama', tanggal='$tanggal', total='$total' WHERE id_penjualan='$id'"
-    );
+  $result = mysqli_query(
+    $koneksi,
+    "UPDATE penjualan SET nama_pembeli='$nama', tanggal='$tanggal', total='$total' WHERE id_penjualan='$id'"
+  );
 
-    if ($result) {
-        echo '
+  if ($result) {
+    echo '
   <div id="successAlert" class="fixed top-4 left-0 right-0 mx-auto w-full max-w-md z-999999 rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15">
     <div class="flex items-start gap-3">
       <div class="-mt-0.5 text-success-500">
@@ -36,8 +36,8 @@ if (isset($_POST['nama_pembeli'])) {
     }, 3000);
     window.location.href = "?page=pembelian";
   </script>';
-    } else {
-        echo '
+  } else {
+    echo '
   <div id="errorAlert" class="fixed top-4 left-0 right-0 mx-auto w-full max-w-md z-9999 rounded-xl border border-warning-500 bg-warning-50 p-4 dark:border-warning-500/30 dark:bg-warning-500/15">
     <div class="flex items-start gap-3">
       <div class="-mt-0.5 text-warning-500 dark:text-orange-400">
@@ -56,7 +56,7 @@ if (isset($_POST['nama_pembeli'])) {
       document.getElementById("errorAlert").style.display = "none";
     }, 3000);
   </script>';
-    }
+  }
 }
 ?>
 
@@ -72,7 +72,7 @@ if (isset($_POST['nama_pembeli'])) {
           class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
           onclick="window.location.href='?page=pembelian_tambah'">
           <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C10.5523 2 11 2.44772 11 3V9H17C17.5523 9 18 9.44772 18 10C18 10.5523 17.5523 11 17 11H11V17C11 17.5523 10.5523 18 10 18C9.44772 18 9 17.5523 9 17V11H3C2.44772 11 2 10.5523 2 10C2 9.44772 2.44772 9 3 9H9V3C9 2.44772 9.44772 2 10 2Z" fill=""/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2C10.5523 2 11 2.44772 11 3V9H17C17.5523 9 18 9.44772 18 10C18 10.5523 17.5523 11 17 11H11V17C11 17.5523 10.5523 18 10 18C9.44772 18 9 17.5523 9 17V11H3C2.44772 11 2 10.5523 2 10C2 9.44772 2.44772 9 3 9H9V3C9 2.44772 9.44772 2 10 2Z" fill="" />
           </svg>
           Tambah Pembelian
         </button>
@@ -84,10 +84,26 @@ if (isset($_POST['nama_pembeli'])) {
         <!-- table header start -->
         <thead>
           <tr class="border-gray-100 border-y dark:border-gray-800">
-            <th class="py-3"><div class="flex items-center"><p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Penjualan</p></div></th>
-            <th class="py-3"><div class="flex items-center"><p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Tanggal</p></div></th>
-            <th class="py-3"><div class="flex items-center"><p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Total</p></div></th>
-            <th class="py-3"><div class="flex items-center col-span-2"><p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Aksi</p></div></th>
+            <th class="py-3">
+              <div class="flex items-center">
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Penjualan</p>
+              </div>
+            </th>
+            <th class="py-3">
+              <div class="flex items-center">
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Tanggal</p>
+              </div>
+            </th>
+            <th class="py-3">
+              <div class="flex items-center">
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Total</p>
+              </div>
+            </th>
+            <th class="py-3">
+              <div class="flex items-center col-span-2">
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Aksi</p>
+              </div>
+            </th>
           </tr>
         </thead>
         <!-- table header end -->
@@ -98,13 +114,25 @@ if (isset($_POST['nama_pembeli'])) {
           <form method="POST" action="">
             <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
               <tr>
-                <td class="py-3"><div class="flex items-center"><p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['nama_pelanggan']; ?></p></div></td>
-                <td class="py-3"><div class="flex items-center"><p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['tanggal_penjualan']; ?></p></div></td>
-                <td class="py-3"><div class="flex items-center"><p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['total_harga']; ?></p></div></td>
+                <td class="py-3">
+                  <div class="flex items-center">
+                    <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['nama_pelanggan']; ?></p>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <div class="flex items-center">
+                    <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['tanggal_penjualan']; ?></p>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <div class="flex items-center">
+                    <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['total_harga']; ?></p>
+                  </div>
+                </td>
                 <td class="py-3">
                   <div class="flex items-center">
                     <button
-                      onclick="window.location.href='?page=pembelian&edit=<?php echo $data['id_penjualan']; ?>'"
+                      onclick="window.location.href='?page=pembelian&detail=<?php echo $data['id_penjualan']; ?>'"
                       class="flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-warning-400 dark:bg-warning-500/15 dark:text-warning-500 px-4 py-3 font-medium text-white hover:bg-warning-500 lg:inline-flex lg:w-auto"
                       type="button">
                       <svg class="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -134,65 +162,65 @@ if (isset($_POST['nama_pembeli'])) {
 
 <!-- BEGIN MODAL -->
 <div
-  id="modalEdit"
+  id="detail"
   x-show="isOpen"
-  <?php if ($editData) : ?>x-data="{ isOpen: true }"<?php else : ?>x-data="{ isOpen: false }"<?php endif; ?>
-  class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-99999"
->
+  <?php if ($detailData) : ?>x-data="{ isOpen: true }" <?php else : ?>x-data="{ isOpen: false }" <?php endif; ?>
+  class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-99999">
   <div class="modal-close-btn fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
   <div
     @click.outside="isOpen = false"
-    class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
-  >
+    class="no-scrollbar relative w-full max-w-[750px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
     <!-- close btn -->
     <button
       @click="isOpen = false"
       onclick="window.location.href='?page=pembelian'"
-      class="transition-color absolute right-5 top-5 z-999 flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:bg-white/[0.05] dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-gray-300"
-    >
+      class="transition-color absolute right-5 top-5 z-999 flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:bg-white/[0.05] dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-gray-300">
       <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M6.04289 16.5418C5.65237 16.9323 5.65237 17.5655 6.04289 17.956C6.43342 18.3465 7.06658 18.3465 7.45711 17.956L11.9987 13.4144L16.5408 17.9565C16.9313 18.347 17.5645 18.347 17.955 17.9565C18.3455 17.566 18.3455 16.9328 17.955 16.5423L13.4129 12.0002L17.955 7.45808C18.3455 7.06756 18.3455 6.43439 17.955 6.04387C17.5645 5.65335 16.9313 5.65335 16.5408 6.04387L11.9987 10.586L7.45711 6.04439C7.06658 5.65386 6.43342 5.65386 6.04289 6.04439C5.65237 6.43491 5.65237 7.06808 6.04289 7.4586L10.5845 12.0002L6.04289 16.5418Z" fill="" />
       </svg>
     </button>
     <div class="px-2 pr-14">
-      <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">Edit Pembelian</h4>
+      <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">Detail Pembelian</h4>
     </div>
     <form method="POST" action="" class="flex flex-col">
-      <div class="custom-scrollbar h-[250px] overflow-y-auto px-2">
+      <div class="custom-scrollbar h-[450px] overflow-y-auto px-2">
         <div class="mt-7">
           <h5 class="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">Informasi Pembelian</h5>
-          <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-            <div class="col-span-2 lg:col-span-1">
-              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Nama Pembeli</label>
-              <input
-                type="text"
-                name="nama_pembeli"
-                value="<?php echo $editData['nama_pembeli'] ?? ''; ?>"
-                class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              />
+          <div class="grid grid-cols-4 gap-x-6 gap-y-5 lg:grid-cols-4">
+            <div class="mb-6 flex items-center gap-4">
+              <span class="text-theme-lg font-medium">Nama pelanggan:</span>
+              <span class="text-gray-800 text-theme-lg"><?php echo $detailData['nama_pelanggan']; ?></span>
             </div>
-            <div class="col-span-2 lg:col-span-1">
-              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Tanggal</label>
-              <input
-                type="date"
-                name="tanggal"
-                required
-                value="<?php echo $editData['tanggal'] ?? ''; ?>"
-                class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              />
-            </div>
-            <div class="col-span-2">
-              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Total</label>
-              <input
-                type="number"
-                name="total"
-                pattern="[0-9]+"
-                maxlength="9"
-                required
-                value="<?php echo $editData['total'] ?? ''; ?>"
-                class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              />
-            </div>
+            <table class="w-full border">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="px-4 py-2 text-left">Produk</th>
+                  <th class="px-4 py-2 text-left">Tanggal</th>
+                  <th class="px-4 py-2 text-left">Harga</th>
+                  <th class="px-4 py-2 text-left">Jumlah</th>
+                  <th class="px-4 py-2 text-left">Sub total</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                <?php
+                $query = mysqli_query(
+                  $koneksi,
+                  "SELECT * FROM detail_penjualan 
+                  LEFT JOIN produk ON produk.id_produk = detail_penjualan.id_produk 
+                  WHERE id_penjualan='$id'"
+                );
+                while ($item = mysqli_fetch_array($query)) {
+                ?>
+                  <tr>
+                    <td class="px-4 py-3"><?php echo $item['nama_produk']; ?></td>
+                    <td class="px-4 py-3"><?php echo $detailData['tanggal_penjualan']; ?></td>
+                    <td class="px-4 py-3"><?php echo $item['harga']; ?></td>
+                    <td class="px-4 py-3"><?php echo $item['jumlah_produk']; ?></td>
+                    <td class="px-4 py-3"><?php echo $item['sub_total']; ?></td>
+                  </tr>
+                <?php } ?>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -206,12 +234,11 @@ if (isset($_POST['nama_pembeli'])) {
         </button>
         <button
           type="submit"
-          class="flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">
-          Simpan
+          class="flex w-full justify-center rounded-lg bg-success-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-success-600 sm:w-auto">
+          Cetak
         </button>
       </div>
     </form>
   </div>
 </div>
 <!-- END MODAL -->
-

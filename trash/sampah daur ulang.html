@@ -2505,3 +2505,51 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
 </html>
 
 
+<table class="min-w-full">
+  <thead>
+    <tr>
+      <th>Nama Barang</th>
+      <th>Tanggal</th>
+      <th>Harga</th>
+      <th>Jumlah</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php
+    $query = mysqli_query($koneksi, "SELECT * FROM detail_penjualan LEFT JOIN produk ON produk.id_produk = detail_penjualan.id_produk WHERE id_penjualan='$id'");
+    while ($data = mysqli_fetch_array($query)) {
+    ?>
+  <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+    <tr>
+      <td class="py-3">
+        <div class="flex items-center">
+          <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['nama_produk']; ?></p>
+        </div>
+      </td>
+      <td class="py-3">
+        <div class="flex items-center">
+          <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['jumlah_produk']; ?></p>
+        </div>
+      </td>
+      <td class="py-3">
+        <div class="flex items-center">
+          <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['harga']; ?></p>
+        </div>
+      </td>
+      <td class="py-3">
+        <div class="flex items-center">
+          <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['tanggal_penjualan']; ?></p>
+        </div>
+      </td>
+      <td class="py-3">
+        <div class="flex items-center">
+          <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['total_harga']; ?></p>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+<?php
+    }
+?>
+</table>
