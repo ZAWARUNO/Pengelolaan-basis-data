@@ -1,7 +1,7 @@
 <?php
-include 'config/database.php';
+include 'build/config/database.php';
 if (!isset($_SESSION['user'])) {
-  header('location:signin.php');
+    header('location:build/signin.php');
   exit;
 }
 
@@ -44,8 +44,8 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
   <title>
     eCommerce Dashboard
   </title>
-  <link rel="icon" href="favicon.ico">
-  <link href="style.css" rel="stylesheet">
+  <link rel="icon" href="build/favicon.ico">
+  <link href="build/style.css" rel="stylesheet">
   <!-- Hapus script ApexCharts dari CDN -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> -->
   <!-- Tambahkan Chart.js CDN -->
@@ -81,17 +81,17 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
         class="flex items-center gap-2 pt-8 sidebar-header pb-7">
         <a href="index.html">
           <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-            <img class="dark:hidden" src="src/images/logo/logo.svg" alt="Logo" />
+            <img class="dark:hidden" src="build/src/images/logo/logo.svg" alt="Logo" />
             <img
               class="hidden dark:block"
-              src="src/images/logo/logo-dark.svg"
+              src="build/src/images/logo/logo-dark.svg"
               alt="Logo" />
           </span>
 
           <img
             class="logo-icon"
             :class="sidebarToggle ? 'lg:block' : 'hidden'"
-            src="src/images/logo/logo-icon.svg"
+            src="build/src/images/logo/logo-icon.svg"
             alt="Logo" />
         </a>
       </div>
@@ -194,7 +194,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
               <!-- Menu Item Pelanggan -->
               <li>
                 <a
-                  href="?page=pelanggan"
+                  href="?page=build/pelanggan"
                   @click="selected = (selected === 'pelanggan' ? '' : 'pelanggan')"
                   class="menu-item group"
                   :class="(selected === 'pelanggan') && (page === 'pelanggan') ? 'menu-item-active' : 'menu-item-inactive'">
@@ -221,7 +221,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
               <!-- Menu Item Produk -->
               <li>
                 <a
-                  href="?page=produk"
+                  href="?page=build/produk"
                   @click="selected = (selected === 'produk' ? '' : 'produk')"
                   class="menu-item group"
                   :class="(selected === 'produk') && (page === 'produk') ? 'menu-item-active' : 'menu-item-inactive'">
@@ -246,7 +246,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
               <!-- Menu Item Pembelian -->
               <li>
                 <a
-                  href="?page=pembelian"
+                  href="?page=build/pembelian"
                   @click="selected = (selected === 'pembelian' ? '' : 'pembelian')"
                   class="menu-item group"
                   :class="(selected === 'pembelian') && (page === 'pembelian') ? 'menu-item-active' : 'menu-item-inactive'">
@@ -355,7 +355,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
                     class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
                     <li>
                       <a
-                        href="signin.php"
+                        href="build/signin.php"
                         class="menu-dropdown-item group"
                         :class="page === 'signin' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
                         Sign In
@@ -363,7 +363,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
                     </li>
                     <li>
                       <a
-                        href="signup.php"
+                        href="build/signup.php"
                         class="menu-dropdown-item group"
                         :class="page === 'signup' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
                         Sign Up
@@ -371,7 +371,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
                     </li>
                     <li>
                       <a
-                        href="signout.php"
+                        href="build/signout.php"
                         class="menu-dropdown-item group"
                         :class="page === 'signout' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
                         Sign Out
@@ -904,7 +904,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
                 href="#"
                 @click.prevent="dropdownOpen = ! dropdownOpen">
                 <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
-                  <img src="src/images/user/owner.jpg" alt="User" />
+                  <img src="build/src/images/user/owner.jpg" alt="User" />
                 </span>
 
                 <span class="text-theme-sm mr-1 block font-medium"> <?php echo $_SESSION['user']['nama'] ?> </span>
@@ -970,7 +970,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
 
       <!-- ===== Main Content Start ===== -->
       <?php
-      $page = isset($_GET['page']) ? $_GET['page'] : 'home';
+      $page = isset($_GET['page']) ? $_GET['page'] : 'build/home';
       include $page . '.php';
       ?>
       <!-- ===== Main Content End ===== -->
@@ -978,7 +978,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
       <!-- ===== Content Area End ===== -->
     </div>
     <!-- ===== Page Wrapper End ===== -->
-    <script defer src="bundle.js"></script>
+    <script defer src="build/bundle.js"></script>
 </body>
 
 </html>

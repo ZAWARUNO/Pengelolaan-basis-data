@@ -13,7 +13,7 @@ if (isset($_POST['username'])) {
     $_SESSION['signup_success'] = true;
     $_SESSION['signup_message'] = 'Silakan lakukan sign up sekarang!';
 
-    header('location: signin.php');
+    header('location: ../signin.php');
     exit;
   } else {
     echo '<div id="errorAlert" class="fixed top-4 left-0 right-0 mx-auto w-full max-w-md z-9999 rounded-xl border border-warning-500 bg-warning-50 p-4 dark:border-warning-500/30 dark:bg-warning-500/15">
@@ -77,7 +77,7 @@ if (isset($_POST['username'])) {
       <div class="flex flex-col flex-1 w-full lg:w-1/2">
         <div class="w-full max-w-md pt-5 mx-auto sm:py-10">
           <a
-            href="index.php"
+            href="../index.php"
             class="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
             <svg
               class="stroke-current"
@@ -93,7 +93,7 @@ if (isset($_POST['username'])) {
                 stroke-linecap="round"
                 stroke-linejoin="round" />
             </svg>
-            Back to dashboard
+             Kembali ke dashboard
           </a>
         </div>
         <div
@@ -222,7 +222,7 @@ if (isset($_POST['username'])) {
           </div>
 
           <div class="flex flex-col items-center max-w-xs">
-            <a href="index.php" class="block mb-4">
+            <a href="../index.php" class="block mb-4">
               <img src="src/images/logo/auth-logo.svg" alt="Logo" />
             </a>
             <p class="text-center text-gray-400 dark:text-white/60">
