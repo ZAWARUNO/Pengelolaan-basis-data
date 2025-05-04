@@ -93,7 +93,7 @@ if (isset($_POST['username'])) {
                 stroke-linecap="round"
                 stroke-linejoin="round" />
             </svg>
-            Back to dashboard
+            Kembali ke dashboard
           </a>
         </div>
         <div
