@@ -101,7 +101,7 @@ if (isset($_SESSION['signup_success']) && $_SESSION['signup_success'] === true) 
       <div class="flex flex-col flex-1 w-full lg:w-1/2">
         <div class="w-full max-w-md pt-10 mx-auto">
           <a
-            href="index.html"
+            href="index.php"
             class="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
             <svg
               class="stroke-current"
@@ -209,15 +209,7 @@ if (isset($_SESSION['signup_success']) && $_SESSION['signup_success'] === true) 
                   </div>
                 </div>
               </form>
-              <div class="mt-5">
-                <p
-                  class="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-                  Tidak punya akun?
-                  <a
-                    href="/signup.php"
-                    class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign Up</a>
-                </p>
-              </div>
+
             </div>
           </div>
         </div>
@@ -236,7 +228,7 @@ if (isset($_SESSION['signup_success']) && $_SESSION['signup_success'] === true) 
           </div>
 
           <div class="flex flex-col items-center max-w-xs">
-            <a href="index.html" class="block mb-4">
+            <a href="index.php" class="block mb-4">
               <img src="src/images/logo/auth-logo.svg" alt="Logo" />
             </a>
             <p class="text-center text-gray-400 dark:text-white/60">

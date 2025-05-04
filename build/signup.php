@@ -47,7 +47,7 @@ if (isset($_POST['username'])) {
     name="viewport"
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>Sign Up| TailAdmin - Tailwind CSS Admin Dashboard Template</title>
+  <title>Sign Up| Dashboard</title>
   <link rel="icon" href="favicon.ico">
   <link href="style.css" rel="stylesheet">
 </head>
@@ -77,7 +77,7 @@ if (isset($_POST['username'])) {
       <div class="flex flex-col flex-1 w-full lg:w-1/2">
         <div class="w-full max-w-md pt-5 mx-auto sm:py-10">
           <a
-            href="index.html"
+            href="index.php"
             class="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
             <svg
               class="stroke-current"
@@ -202,7 +202,7 @@ if (isset($_POST['username'])) {
                 class="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
                 Sudah Punya Akun?
                 <a
-                  href="/signin.html"
+                  href="signin.php"
                   class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign In</a>
               </p>
             </div>
@@ -222,7 +222,7 @@ if (isset($_POST['username'])) {
           </div>
 
           <div class="flex flex-col items-center max-w-xs">
-            <a href="index.html" class="block mb-4">
+            <a href="index.php" class="block mb-4">
               <img src="src/images/logo/auth-logo.svg" alt="Logo" />
             </a>
             <p class="text-center text-gray-400 dark:text-white/60">

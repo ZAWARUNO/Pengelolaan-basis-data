@@ -2553,3 +2553,210 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
     }
 ?>
 </table>
+
+
+   <!-- Script untuk membuat chart ApexCharts secara dinamis -->
+   <script>
+    // --- Script untuk Chart Batang (Penjualan per Bulan) ---
+    window.addEventListener('load', function() {
+       <?php
+       // Ambil data dari PHP
+       $jsDataSeries = json_encode($dataSeriesChartBatang);
+       $jsBulanLabels = json_encode($bulanLabels);
+       ?>
+
+       var chartOneOptions = {
+          series: [{
+             name: "Penjualan", // Ubah nama series jika perlu
+             data: <?= $jsDataSeries ?> // Gunakan data dinamis
+          }],
+          colors: ["#465fff"], // Warna dari template
+          chart: {
+             fontFamily: "Outfit, sans-serif",
+             type: "bar",
+             height: 310, // Sesuaikan tinggi jika perlu (lebih tinggi dari chart lingkaran)
+             toolbar: {
+                show: false
+             }
+          },
+          plotOptions: {
+             bar: {
+                horizontal: false,
+                columnWidth: "55%", // Sesuaikan lebar kolom jika perlu
+                borderRadius: 5,
+                borderRadiusApplication: "end"
+             }
+          },
+          dataLabels: {
+             enabled: false
+          },
+          stroke: {
+             show: true,
+             width: 4,
+             colors: ["transparent"]
+          },
+          xaxis: {
+             categories: <?= $jsBulanLabels ?>, // Gunakan label bulan dinamis
+             axisBorder: {
+                show: false
+             },
+             axisTicks: {
+                show: false
+             }
+          },
+          legend: {
+             show: true,
+             position: "top",
+             horizontalAlign: "left",
+             fontFamily: "Outfit",
+             markers: {
+                radius: 99
+             }
+          },
+          yaxis: {
+             title: false,
+             labels: {
+                // Formatter untuk menampilkan nilai Rupiah
+                formatter: function(value) {
+                   // Format sederhana, bisa disesuaikan
+                   if (value >= 1000000) {
+                      return "Rp " + (value / 1000000).toFixed(1).replace('.', ',') + ' Jt';
+                   } else if (value >= 1000) {
+                      return "Rp " + (value / 1000).toFixed(0) + ' Ribu';
+                   } else {
+                      return "Rp " + value;
+                   }
+                }
+             }
+          },
+          grid: {
+             yaxis: {
+                lines: {
+                   show: true // Tampilkan garis horizontal grid
+                }
+             }
+          },
+          fill: {
+             opacity: 1
+          },
+          tooltip: {
+             x: {
+                show: true // Tampilkan bulan di tooltip
+             },
+             y: {
+                formatter: function formatter(val) {
+                   // Format tooltip sebagai Rupiah penuh
+                   return "Rp " + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                },
+                title: {
+                   formatter: function(seriesName) {
+                      return seriesName + ':'
+                   }
+                }
+             }
+          }
+       };
+
+       // Targetkan ID baru
+       var chartSelectorOne = document.querySelector("#chartOneDynamic");
+
+       if (chartSelectorOne) {
+          if (typeof ApexCharts !== 'undefined') {
+             var chartOne = new ApexCharts(chartSelectorOne, chartOneOptions);
+             try {
+                chartOne.render();
+             } catch (e) {
+                console.error("Error rendering dynamic ApexChart #chartOneDynamic:", e);
+             }
+          } else {
+             console.error("ApexCharts library not found for dynamic chart #chartOne.");
+          }
+       } else {
+          console.warn("Element #chartOneDynamic not found for chart initialization.");
+       }
+    });
+ </script>
+
+
+
+ <script>
+      window.addEventListener('load', function() {
+         var chartYearOptions = {
+            series: [{
+               name: "Penjualan",
+               data: <?= json_encode($dataSeriesChartBatang) ?>
+            }],
+            colors: ["#465fff"],
+            chart: {
+               fontFamily: "Outfit, sans-serif",
+               type: "bar",
+               height: 180,
+               toolbar: {
+                  show: false
+               }
+            },
+            plotOptions: {
+               bar: {
+                  horizontal: false,
+                  columnWidth: "39%",
+                  borderRadius: 5,
+                  borderRadiusApplication: "end"
+               }
+            },
+            dataLabels: {
+               enabled: false
+            },
+            stroke: {
+               show: true,
+               width: 4,
+               colors: ["transparent"]
+            },
+            xaxis: {
+               categories: <?= json_encode($bulanLabels) ?>,
+               axisBorder: {
+                  show: false
+               },
+               axisTicks: {
+                  show: false
+               }
+            },
+            legend: {
+               show: true,
+               position: "top",
+               horizontalAlign: "left",
+               fontFamily: "Outfit",
+               markers: {
+                  radius: 99
+               }
+            },
+            yaxis: {
+               title: false
+            },
+            grid: {
+               yaxis: {
+                  lines: {
+                     show: true
+                  }
+               }
+            },
+            fill: {
+               opacity: 1
+            },
+            tooltip: {
+               x: {
+                  show: false
+               },
+               y: {
+                  formatter: function(val) {
+                     return val;
+                  }
+               }
+            }
+         };
+         var chartSelector = document.querySelector("#chartYear");
+         if (chartSelector) {
+            var chartYear = new ApexCharts(chartSelector, chartYearOptions);
+            chartYear.render();
+         }
+      });
+   </script>

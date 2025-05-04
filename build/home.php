@@ -23,7 +23,7 @@ if ($resultHariIni && $resultHariIni->num_rows > 0) {
 
 
 // Tentukan target bulanan
-$targetBulanan = 10000000; // Rp 10 Juta (Diubah dari 300 Juta)
+$targetBulanan = 100000000; // Rp 10 Juta (Diubah dari 300 Juta)
 
 // Hitung persentase pencapaian
 $persentasePencapaian = 0;
@@ -37,20 +37,18 @@ if ($targetBulanan > 0 && $numericTotalPenjualanBulanan !== false) {
 // Note: Don't close connection here if index.php needs it later ($koneksi->close();)
 
 // --- Data untuk Chart Batang (Penjualan per Bulan) ---
-$dataPenjualanPerBulan = array_fill(1, 12, 0); // Inisialisasi array 12 bulan dengan nilai 0
-$bulanLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']; // Label bulan
+$dataPenjualanPerBulan = array_fill(1, 12, 0);
+$bulanLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
 $tahunSekarang = date('Y');
-$sqlPenjualanBulanan = "SELECT MONTH(tanggal_penjualan) as bulan, SUM(total_harga) as total 
-                       FROM penjualan 
-                       WHERE YEAR(tanggal_penjualan) = $tahunSekarang
-                       GROUP BY MONTH(tanggal_penjualan)
-                       ORDER BY bulan ASC";
+$sql = "SELECT MONTH(tanggal_penjualan) as bulan, SUM(total_harga) as total 
+        FROM penjualan 
+        WHERE YEAR(tanggal_penjualan) = $tahunSekarang
+        GROUP BY bulan";
+$result = $koneksi->query($sql);
 
-$resultPenjualanBulanan = $koneksi->query($sqlPenjualanBulanan);
-
-if ($resultPenjualanBulanan) {
-   while ($row = $resultPenjualanBulanan->fetch_assoc()) {
+if ($result) {
+   while ($row = $result->fetch_assoc()) {
       $bulan = (int)$row['bulan'];
       $total = (float)($row['total'] ?? 0);
       if ($bulan >= 1 && $bulan <= 12) {
@@ -58,8 +56,6 @@ if ($resultPenjualanBulanan) {
       }
    }
 }
-
-// Ubah data menjadi array numerik sederhana untuk JavaScript
 $dataSeriesChartBatang = array_values($dataPenjualanPerBulan);
 // --- Akhir Data Chart Batang ---
 
@@ -86,7 +82,7 @@ $dataSeriesChartBatang = array_values($dataPenjualanPerBulan);
                         <path
                            fill-rule="evenodd"
                            clip-rule="evenodd"
-                           d="M8.80443 5.60156C7.59109 5.60156 6.60749 6.58517 6.60749 7.79851C6.60749 9.01185 7.59109 9.99545 8.80443 9.99545C10.0178 9.99545 11.0014 9.01185 11.0014 7.79851C11.0014 6.58517 10.0178 5.60156 8.80443 5.60156ZM5.10749 7.79851C5.10749 5.75674 6.76267 4.10156 8.80443 4.10156C10.8462 4.10156 12.5014 5.75674 12.5014 7.79851C12.5014 9.84027 10.8462 11.4955 8.80443 11.4955C6.76267 11.4955 5.10749 9.84027 5.10749 7.79851ZM4.86252 15.3208C4.08769 16.0881 3.70377 17.0608 3.51705 17.8611C3.48384 18.0034 3.5211 18.1175 3.60712 18.2112C3.70161 18.3141 3.86659 18.3987 4.07591 18.3987H13.4249C13.6343 18.3987 13.7992 18.3141 13.8937 18.2112C13.9797 18.1175 14.017 18.0034 13.9838 17.8611C13.7971 17.0608 13.4132 16.0881 12.6383 15.3208C11.8821 14.572 10.6899 13.955 8.75042 13.955C6.81096 13.955 5.61877 14.572 4.86252 15.3208ZM3.8071 14.2549C4.87163 13.2009 6.45602 12.455 8.75042 12.455C11.0448 12.455 12.6292 13.2009 13.6937 14.2549C14.7397 15.2906 15.2207 16.5607 15.4446 17.5202C15.7658 18.8971 14.6071 19.8987 13.4249 19.8987H4.07591C2.89369 19.8987 1.73504 18.8971 2.05628 17.5202C2.28015 16.5607 2.76117 15.2906 3.8071 14.2549ZM15.3042 11.4955C14.4702 11.4955 13.7006 11.2193 13.0821 10.7533C13.3742 10.3314 13.6054 9.86419 13.7632 9.36432C14.1597 9.75463 14.7039 9.99545 15.3042 9.99545C16.5176 9.99545 17.5012 9.01185 17.5012 7.79851C17.5012 6.58517 16.5176 5.60156 15.3042 5.60156C14.7039 5.60156 14.1597 5.84239 13.7632 6.23271C13.6054 5.73284 13.3741 5.26561 13.082 4.84371C13.7006 4.37777 14.4702 4.10156 15.3042 4.10156C17.346 4.10156 19.0012 5.75674 19.0012 7.79851C19.0012 9.84027 17.346 11.4955 15.3042 11.4955ZM19.9248 19.8987H16.3901C16.7014 19.4736 16.9159 18.969 16.9827 18.3987H19.9248C20.1341 18.3987 20.2991 18.3141 20.3936 18.2112C20.4796 18.1175 20.5169 18.0034 20.4837 17.861C20.2969 17.0607 19.913 16.088 19.1382 15.3208C18.4047 14.5945 17.261 13.9921 15.4231 13.9566C15.2232 13.6945 14.9995 13.437 14.7491 13.1891C14.5144 12.9566 14.262 12.7384 13.9916 12.5362C14.3853 12.4831 14.8044 12.4549 15.2503 12.4549C17.5447 12.4549 19.1291 13.2008 20.1936 14.2549C21.2395 15.2906 21.7206 16.5607 21.9444 17.5202C22.2657 18.8971 21.107 19.8987 19.9248 19.8987Z"
+                           d="M8.80443 5.60156C7.59109 5.60156 6.60749 6.58517 6.60749 7.79851C6.60749 9.01185 7.59109 9.99545 8.80443 9.99545C10.0178 9.99545 11.0014 9.01185 11.0014 7.79851C11.0014 6.58517 10.0178 5.60156 8.80443 5.60156ZM5.10749 7.79851C5.10749 5.75674 6.76267 4.10156 8.80443 4.10156C10.8462 4.10156 12.5014 5.75674 12.5014 7.79851C12.5014 9.84027 10.8462 11.4955 8.80443 11.4955C6.76267 11.4955 5.10749 9.84027 5.10749 7.79851C5.10749 6.58517 6.60749 5.60156 8.80443 5.60156C10.0178 5.60156 11.0014 6.58517 11.0014 7.79851C11.0014 8.80443 10.0178 9.78804 8.80443 9.78804C7.59109 9.78804 6.60749 8.80443 6.60749 7.79851ZM4.86252 15.3208C4.08769 16.0881 3.70377 17.0608 3.51705 17.8611C3.48384 18.0034 3.5211 18.1175 3.60712 18.2112C3.70161 18.3141 3.86659 18.3987 4.07591 18.3987H13.4249C13.6343 18.3987 13.7992 18.3141 13.8937 18.2112C13.9797 18.1175 14.017 18.0034 13.9838 17.8611C13.7971 17.0608 13.4132 16.0881 12.6383 15.3208C11.8821 14.572 10.6899 13.955 8.75042 13.955C6.81096 13.955 5.61877 14.572 4.86252 15.3208ZM3.8071 14.2549C4.87163 13.2009 6.45602 12.455 8.75042 12.455C11.0448 12.455 12.6292 13.2009 13.6937 14.2549C14.7397 15.2906 15.2207 16.5607 15.4446 17.5202C15.7658 18.8971 14.6071 19.8987 13.4249 19.8987H4.07591C2.89369 19.8987 1.73504 18.8971 2.05628 17.5202C2.28015 16.5607 2.76117 15.2906 3.8071 14.2549ZM15.3042 11.4955C14.4702 11.4955 13.7006 11.2193 13.0821 10.7533C13.3742 10.3314 13.6054 9.86419 13.7632 9.36432C14.1597 9.75463 14.7039 9.99545 15.3042 9.99545C16.5176 9.99545 17.5012 9.01185 17.5012 7.79851C17.5012 6.58517 16.5176 5.60156 15.3042 5.60156C14.7039 5.60156 14.1597 5.84239 13.7632 6.23271C13.6054 5.73284 13.3741 5.26561 13.082 4.84371C13.7006 4.37777 14.4702 4.10156 15.3042 4.10156C17.346 4.10156 19.0012 5.75674 19.0012 7.79851C19.0012 9.84027 17.346 11.4955 15.3042 11.4955ZM19.9248 19.8987H16.3901C16.7014 19.4736 16.9159 18.969 16.9827 18.3987H19.9248C20.1341 18.3987 20.2991 18.3141 20.3936 18.2112C20.4796 18.1175 20.5169 18.0034 20.4837 17.861C20.2969 17.0607 19.913 16.088 19.1382 15.3208C18.4047 14.5945 17.261 13.9921 15.4231 13.9566C15.2232 13.6945 14.9995 13.437 14.7491 13.1891C14.5144 12.9566 14.262 12.7384 13.9916 12.5362C14.3853 12.4831 14.8044 12.4549 15.2503 12.4549C17.5447 12.4549 19.1291 13.2008 20.1936 14.2549C21.2395 15.2906 21.7206 16.5607 21.9444 17.5202C22.2657 18.8971 21.107 19.8987 19.9248 19.8987Z"
                            fill="" />
                      </svg>
                   </div>
@@ -240,55 +236,16 @@ $dataSeriesChartBatang = array_values($dataPenjualanPerBulan);
             <!-- Metric Group One -->
 
             <!-- ====== Chart One Start -->
-            <div
-               class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
+            <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
                <div class="flex items-center justify-between">
                   <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                     Penjualan Bulanan (<?= $tahunSekarang ?>) <!-- Updated Title -->
+                     Penjualan Bulanan (<?= $tahunSekarang ?>)
                   </h3>
-
-                  <div x-data="{openDropDown: false}" class="relative h-fit">
-                     <button
-                        @click="openDropDown = !openDropDown"
-                        :class="openDropDown ? 'text-gray-700 dark:text-white' : 'text-gray-400 hover:text-gray-700 dark:hover:text-white'">
-                        <svg
-                           class="fill-current"
-                           width="24"
-                           height="24"
-                           viewBox="0 0 24 24"
-                           fill="none"
-                           xmlns="http://www.w3.org/2000/svg">
-                           <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-                              fill="" />
-                        </svg>
-                     </button>
-                     <div
-                        x-show="openDropDown"
-                        @click.outside="openDropDown = false"
-                        class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
-                        <button
-                           class="flex w-full px-3 py-2 font-medium text-left text-gray-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                           View More
-                        </button>
-                        <button
-                           class="flex w-full px-3 py-2 font-medium text-left text-gray-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                           Delete
-                        </button>
-                     </div>
-                  </div>
                </div>
-
                <div class="max-w-full overflow-x-auto custom-scrollbar">
-                  <div class="-ml-5 min-w-[650px] pl-2 xl:min-w-full">
-                     <div
-                        id="chartOneDynamic"
-                        class="-ml-5 h-full min-w-[650px] pl-2 xl:min-w-full"></div>
-                  </div>
+                  <canvas id="chartBarPenjualan" style="min-height:220px"></canvas>
                </div>
-            </div>`
+            </div>
             <!-- ====== Chart One End -->
          </div>
          <div class="col-span-12 xl:col-span-5">
@@ -390,10 +347,8 @@ $dataSeriesChartBatang = array_values($dataPenjualanPerBulan);
             </div>
             <!-- ====== Chart Two End -->
          </div>
-
       </div>
    </div>
-
    <!-- Script untuk membuat chart Chart.js secara dinamis -->
    <script>
       window.addEventListener('load', function() {
@@ -458,48 +413,35 @@ $dataSeriesChartBatang = array_values($dataPenjualanPerBulan);
       });
    </script>
 
-   <!-- Script untuk membuat chart ApexCharts secara dinamis -->
+   <!-- CDN ApexCharts -->
+   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
    <script>
-      // --- Script untuk Chart Batang (Penjualan per Bulan) ---
-      window.addEventListener('load', function() {
-         <?php
-         // Ambil data dari PHP
-         $jsDataSeries = json_encode($dataSeriesChartBatang);
-         $jsBulanLabels = json_encode($bulanLabels);
-         ?>
-
-         var chartOneOptions = {
+      document.addEventListener('DOMContentLoaded', function() {
+         var options = {
             series: [{
-               name: "Penjualan", // Ubah nama series jika perlu
-               data: <?= $jsDataSeries ?> // Gunakan data dinamis
+               name: 'Penjualan',
+               data: <?= json_encode($dataSeriesChartBatang) ?>
             }],
-            colors: ["#465fff"], // Warna dari template
             chart: {
-               fontFamily: "Outfit, sans-serif",
-               type: "bar",
-               height: 310, // Sesuaikan tinggi jika perlu (lebih tinggi dari chart lingkaran)
+               type: 'bar',
+               height: 220,
                toolbar: {
                   show: false
                }
             },
+            colors: ['#465fff'],
             plotOptions: {
                bar: {
                   horizontal: false,
-                  columnWidth: "55%", // Sesuaikan lebar kolom jika perlu
-                  borderRadius: 5,
-                  borderRadiusApplication: "end"
+                  columnWidth: '40%',
+                  borderRadius: 5
                }
             },
             dataLabels: {
                enabled: false
             },
-            stroke: {
-               show: true,
-               width: 4,
-               colors: ["transparent"]
-            },
             xaxis: {
-               categories: <?= $jsBulanLabels ?>, // Gunakan label bulan dinamis
+               categories: <?= json_encode($bulanLabels) ?>,
                axisBorder: {
                   show: false
                },
@@ -507,76 +449,72 @@ $dataSeriesChartBatang = array_values($dataPenjualanPerBulan);
                   show: false
                }
             },
-            legend: {
-               show: true,
-               position: "top",
-               horizontalAlign: "left",
-               fontFamily: "Outfit",
-               markers: {
-                  radius: 99
-               }
-            },
             yaxis: {
-               title: false,
-               labels: {
-                  // Formatter untuk menampilkan nilai Rupiah
-                  formatter: function(value) {
-                     // Format sederhana, bisa disesuaikan
-                     if (value >= 1000000) {
-                        return "Rp " + (value / 1000000).toFixed(1).replace('.', ',') + ' Jt';
-                     } else if (value >= 1000) {
-                        return "Rp " + (value / 1000).toFixed(0) + ' Ribu';
-                     } else {
-                        return "Rp " + value;
-                     }
-                  }
+               title: {
+                  text: 'Total Penjualan (Rp)'
                }
             },
             grid: {
                yaxis: {
                   lines: {
-                     show: true // Tampilkan garis horizontal grid
+                     show: true
                   }
                }
             },
-            fill: {
-               opacity: 1
-            },
             tooltip: {
-               x: {
-                  show: true // Tampilkan bulan di tooltip
-               },
                y: {
-                  formatter: function formatter(val) {
-                     // Format tooltip sebagai Rupiah penuh
-                     return "Rp " + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                  },
-                  title: {
-                     formatter: function(seriesName) {
-                        return seriesName + ':'
-                     }
+                  formatter: function(val) {
+                     return 'Rp ' + val.toLocaleString('id-ID');
                   }
                }
             }
          };
-
-         // Targetkan ID baru
-         var chartSelectorOne = document.querySelector("#chartOneDynamic");
-
-         if (chartSelectorOne) {
-            if (typeof ApexCharts !== 'undefined') {
-               var chartOne = new ApexCharts(chartSelectorOne, chartOneOptions);
-               try {
-                  chartOne.render();
-               } catch (e) {
-                  console.error("Error rendering dynamic ApexChart #chartOneDynamic:", e);
-               }
-            } else {
-               console.error("ApexCharts library not found for dynamic chart #chartOne.");
-            }
-         } else {
-            console.warn("Element #chartOneDynamic not found for chart initialization.");
-         }
+         var chart = new ApexCharts(document.querySelector("#chartPenjualanBulanan"), options);
+         chart.render();
       });
    </script>
+
+   <!-- CDN Chart.js -->
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script>
+      document.addEventListener('DOMContentLoaded', function() {
+         var ctx = document.getElementById('chartBarPenjualan').getContext('2d');
+         var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+               labels: <?= json_encode($bulanLabels) ?>,
+               datasets: [{
+                  label: 'Penjualan',
+                  data: <?= json_encode($dataSeriesChartBatang) ?>,
+                  backgroundColor: '#465FFF'
+               }]
+            },
+            options: {
+               responsive: true,
+               plugins: {
+                  legend: {
+                     display: false
+                  },
+                  tooltip: {
+                     callbacks: {
+                        label: function(context) {
+                           return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                        }
+                     }
+                  }
+               },
+               scales: {
+                  y: {
+                     beginAtZero: true,
+                     title: {
+                        display: true,
+                        text: 'Total Penjualan (Rp)'
+                     }
+                  }
+               }
+            }
+         });
+      });
+   </script>
+
 </main>

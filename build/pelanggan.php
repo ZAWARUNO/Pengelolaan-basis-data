@@ -81,24 +81,45 @@ if (isset($_POST['nama_pelanggan'])) {
                 class="text-base font-medium text-gray-800 dark:text-white/90">
                 Data Pelanggan
               </h3>
-              <button
-                class="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
-                onclick="window.location.href='?page=pelanggan_tambah'">
-                Tambah
-                <svg
-                  class="fill-current"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M10 2C10.5523 2 11 2.44772 11 3V9H17C17.5523 9 18 9.44772 18 10C18 10.5523 17.5523 11 17 11H11V17C11 17.5523 10.5523 18 10 18C9.44772 18 9 17.5523 9 17V11H3C2.44772 11 2 10.5523 2 10C2 9.44772 2.44772 9 3 9H9V3C9 2.44772 9.44772 2 10 2Z"
-                    fill="" />
-                </svg>
-              </button>
+              <div class="flex items-center gap-2">
+                <button
+                  class="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-success-500 shadow-theme-xs hover:bg-success-600"
+                  onclick="window.open('laporan_pelanggan.php', '_blank')">
+                  Laporan
+                  <svg
+                    class="fill-current"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M19 8H5C3.89 8 3 8.9 3 10V16H5V20H19V16H21V10C21 8.9 20.1 8 19 8Z"
+                      fill="currentColor" />
+                    <path
+                      d="M7 5H17V8H7V5Z"
+                      fill="currentColor" />
+                  </svg>
+                </button>
+                <button
+                  class="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
+                  onclick="window.location.href='?page=pelanggan_tambah'">
+                  Tambah
+                  <svg
+                    class="fill-current"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M10 2C10.5523 2 11 2.44772 11 3V9H17C17.5523 9 18 9.44772 18 10C18 10.5523 17.5523 11 17 11H11V17C11 17.5523 10.5523 18 10 18C9.44772 18 9 17.5523 9 17V11H3C2.44772 11 2 10.5523 2 10C2 9.44772 2.44772 9 3 9H9V3C9 2.44772 9.44772 2 10 2Z"
+                      fill="" />
+                  </svg>
+                </button>
+              </div>
             </div>
             <div
               class="p-5 border-t border-gray-100 dark:border-gray-800 sm:p-6">
@@ -151,63 +172,136 @@ if (isset($_POST['nama_pelanggan'])) {
                       class="divide-y divide-gray-100 dark:divide-gray-800">
                       <!-- Example row, replace with dynamic data -->
                       <?php
-                      $query = mysqli_query($koneksi, "SELECT*FROM pelanggan");
-                      while ($data = mysqli_fetch_array($query)) :
+                      $cari = $_GET['cari'] ?? '';
+                      $sql = "SELECT * FROM pelanggan";
+                      if (!empty($cari)) {
+                        $sql .= " WHERE nama_pelanggan LIKE '%$cari%'";
+
+                        $result = mysqli_query($koneksi, $sql);
+                        while ($data = mysqli_fetch_array($result)) {
                       ?>
-                        <tr>
-                          <td class="px-5 py-4 sm:px-6">
-                            <div class="flex items-center">
-                              <p
-                                class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                <?php echo $data['nama_pelanggan']; ?>
-                              </p>
-                            </div>
-                          </td>
-                          <td class="px-5 py-4 sm:px-6">
-                            <div class="flex items-center">
-                              <p
-                                class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                <?php echo $data['alamat']; ?>
-                              </p>
-                            </div>
-                          </td>
-                          <td class="px-5 py-4 sm:px-6">
-                            <div class="flex items-center">
-                              <p
-                                class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                <?php echo $data['no_telepon']; ?>
-                              </p>
-                            </div>
-                          </td>
-                          <td class="px-5 py-4 sm:px-6">
-                            <div class="flex items-center">
-                              <button
-                                onclick="window.location.href='?page=pelanggan&edit=<?php echo $data['id_pelanggan']; ?>'"
-                                class="flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-warning-400 dark:bg-warning-500/15 dark:text-warning-500 px-4 py-3 font-medium text-white hover:bg-warning-500 lg:inline-flex lg:w-auto" type="button">
-                                <svg
-                                  class="fill-current"
-                                  width="18"
-                                  height="18"
-                                  viewBox="0 0 18 18"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg">
-                                  <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
-                                    fill="" />
-                                </svg>
-                                Edit
-                              </button>
-                              <button
-                                class="ml-1 flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-red-400 dark:bg-error-500/15 dark:text-error-500 px-4 py-3 font-medium text-white hover:bg-red-500 lg:inline-flex lg:w-auto"
-                                onclick="window.location.href='?page=hapus_pelanggan&&id=<?php echo $data['id_pelanggan']; ?>'">
-                                Hapus
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      <?php endwhile ?>
+                          <tr>
+                            <td class="px-5 py-4 sm:px-6">
+                              <div class="flex items-center">
+                                <p
+                                  class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                  <?php echo $data['nama_pelanggan']; ?>
+                                </p>
+                              </div>
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
+                              <div class="flex items-center">
+                                <p
+                                  class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                  <?php echo $data['alamat']; ?>
+                                </p>
+                              </div>
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
+                              <div class="flex items-center">
+                                <p
+                                  class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                  <?php echo $data['no_telepon']; ?>
+                                </p>
+                              </div>
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
+                              <div class="flex items-center">
+                                <button
+                                  onclick="window.location.href='?page=pelanggan&edit=<?php echo $data['id_pelanggan']; ?>'"
+                                  class="flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-warning-400 dark:bg-warning-500/15 dark:text-warning-500 px-4 py-3 font-medium text-white hover:bg-warning-500 lg:inline-flex lg:w-auto" type="button">
+                                  <svg
+                                    class="fill-current"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 18 18"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                      fill-rule="evenodd"
+                                      clip-rule="evenodd"
+                                      d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
+                                      fill="" />
+                                  </svg>
+                                  Edit
+                                </button>
+                                <button
+                                  class="ml-1 flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-red-400 dark:bg-error-500/15 dark:text-error-500 px-4 py-3 font-medium text-white hover:bg-red-500 lg:inline-flex lg:w-auto"
+                                  onclick="window.location.href='?page=hapus_pelanggan&&id=<?php echo $data['id_pelanggan']; ?>'">
+                                  <svg class="fill-current" width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6 2a1 1 0 00-1 1v1h10V3a1 1 0 00-1-1H6zm-2 4v9a2 2 0 002 2h8a2 2 0 002-2V6H4z" fill="currentColor" />
+                                  </svg>
+                                  Hapus
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        <?php
+                        }
+                      } else {
+                        $sql = "SELECT * FROM pelanggan";
+                        $result = mysqli_query($koneksi, $sql);
+                        while ($data = mysqli_fetch_array($result)) {
+                        ?>
+                          <tr>
+                            <td class="px-5 py-4 sm:px-6">
+                              <div class="flex items-center">
+                                <p
+                                  class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                  <?php echo $data['nama_pelanggan']; ?>
+                                </p>
+                              </div>
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
+                              <div class="flex items-center">
+                                <p
+                                  class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                  <?php echo $data['alamat']; ?>
+                                </p>
+                              </div>
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
+                              <div class="flex items-center">
+                                <p
+                                  class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                  <?php echo $data['no_telepon']; ?>
+                                </p>
+                              </div>
+                            </td>
+                            <td class="px-5 py-4 sm:px-6">
+                              <div class="flex items-center">
+                                <button
+                                  onclick="window.location.href='?page=pelanggan&edit=<?php echo $data['id_pelanggan']; ?>'"
+                                  class="flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-warning-400 dark:bg-warning-500/15 dark:text-warning-500 px-4 py-3 font-medium text-white hover:bg-warning-500 lg:inline-flex lg:w-auto" type="button">
+                                  <svg
+                                    class="fill-current"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 18 18"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                      fill-rule="evenodd"
+                                      clip-rule="evenodd"
+                                      d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
+                                      fill="" />
+                                  </svg>
+                                  Edit
+                                </button>
+                                <button
+                                  class="ml-1 flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-red-400 dark:bg-error-500/15 dark:text-error-500 px-4 py-3 font-medium text-white hover:bg-red-500 lg:inline-flex lg:w-auto"
+                                  onclick="window.location.href='?page=hapus_pelanggan&&id=<?php echo $data['id_pelanggan']; ?>'">
+                                  <svg class="fill-current" width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6 2a1 1 0 00-1 1v1h10V3a1 1 0 00-1-1H6zm-2 4v9a2 2 0 002 2h8a2 2 0 002-2V6H4z" fill="currentColor" />
+                                  </svg>
+                                  Hapus
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                      <?php
+                        }
+                      } ?>
                       <!-- End of example row -->
                     </tbody>
                   </table>
@@ -305,8 +399,7 @@ if (isset($_POST['nama_pelanggan'])) {
               <input
                 type="tel"
                 name="no_telepon"
-                pattern="[0-9]+"
-                maxlength="9"
+                pattern="^[\+]?\s*\d(?:\s*\d)*\s*$"
                 value="<?php echo $editData['no_telepon'] ?? ''; ?>"
                 required
                 class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />

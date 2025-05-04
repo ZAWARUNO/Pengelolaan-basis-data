@@ -69,6 +69,25 @@ if (isset($_POST['nama_pembeli'])) {
       </div>
       <div class="flex items-center gap-3">
         <button
+          class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-success-500 px-4 py-2.5 text-theme-sm font-medium text-white shadow-theme-xs hover:bg-success-600"
+          onclick="window.open('laporan_pembelian.php', '_blank')">
+          <svg
+                    class="fill-current"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M19 8H5C3.89 8 3 8.9 3 10V16H5V20H19V16H21V10C21 8.9 20.1 8 19 8Z"
+                      fill="currentColor" />
+                    <path
+                      d="M7 5H17V8H7V5Z"
+                      fill="currentColor" />
+                  </svg>
+          Laporan
+        </button>
+        <button
           class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
           onclick="window.location.href='?page=pembelian_tambah'">
           <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -86,7 +105,7 @@ if (isset($_POST['nama_pembeli'])) {
           <tr class="border-gray-100 border-y dark:border-gray-800">
             <th class="py-3">
               <div class="flex items-center">
-                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Penjualan</p>
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Pelanggan</p>
               </div>
             </th>
             <th class="py-3">
@@ -108,8 +127,14 @@ if (isset($_POST['nama_pembeli'])) {
         </thead>
         <!-- table header end -->
         <?php
-        $query = mysqli_query($koneksi, "SELECT * FROM penjualan LEFT JOIN pelanggan ON penjualan.id_pelanggan = pelanggan.id_pelanggan");
-        while ($data = mysqli_fetch_array($query)) {
+        $cari = $_GET['cari'] ?? '';
+        $sql = "SELECT * FROM penjualan LEFT JOIN pelanggan ON penjualan.id_pelanggan = pelanggan.id_pelanggan";
+        if (!empty($cari)) {
+          $sql .= " WHERE tanggal_penjualan LIKE '%$cari%'";
+
+          $result = mysqli_query($koneksi, $sql);
+        
+        while ($data = mysqli_fetch_array($result)) {
         ?>
           <form method="POST" action="">
             <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -126,7 +151,7 @@ if (isset($_POST['nama_pembeli'])) {
                 </td>
                 <td class="py-3">
                   <div class="flex items-center">
-                    <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['total_harga']; ?></p>
+                    <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo number_format($data['total_harga'], 0, ',', '.'); ?></p>
                   </div>
                 </td>
                 <td class="py-3">
@@ -144,6 +169,9 @@ if (isset($_POST['nama_pembeli'])) {
                       class="ml-1 flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-red-400 dark:bg-error-500/15 dark:text-error-500 px-4 py-3 font-medium text-white hover:bg-red-500 lg:inline-flex lg:w-auto"
                       type="button"
                       onclick="window.location.href='?page=pembelian_hapus&&id=<?php echo $data['id_penjualan']; ?>'">
+                      <svg class="fill-current" width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M6 2a1 1 0 00-1 1v1h10V3a1 1 0 00-1-1H6zm-2 4v9a2 2 0 002 2h8a2 2 0 002-2V6H4z" fill="currentColor" />
+                      </svg>
                       Hapus
                     </button>
                   </div>
@@ -152,7 +180,56 @@ if (isset($_POST['nama_pembeli'])) {
             </tbody>
           </form>
         <?php
-        }
+        } 
+      } else {
+          $query = mysqli_query($koneksi, "SELECT * FROM penjualan LEFT JOIN pelanggan ON penjualan.id_pelanggan = pelanggan.id_pelanggan");
+          while ($data = mysqli_fetch_array($query)) {
+        ?>
+          <form method="POST" action="">
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr>
+                <td class="py-3">
+                  <div class="flex items-center">
+                    <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['nama_pelanggan']; ?></p>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <div class="flex items-center">
+                    <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo $data['tanggal_penjualan']; ?></p>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <div class="flex items-center">
+                    <p class="text-gray-500 text-theme-sm dark:text-gray-400"><?php echo number_format($data['total_harga'], 0, ',', '.'); ?></p>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <div class="flex items-center">
+                    <button
+                      onclick="window.location.href='?page=pembelian&detail=<?php echo $data['id_penjualan']; ?>'"
+                      class="flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-warning-400 dark:bg-warning-500/15 dark:text-warning-500 px-4 py-3 font-medium text-white hover:bg-warning-500 lg:inline-flex lg:w-auto"
+                      type="button">
+                      <svg class="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z" fill="" />
+                      </svg>
+                      Detail
+                    </button>
+                    <button
+                      class="ml-1 flex w-full items-center justify-center gap-2 rounded-full text-sm shadow-theme-xs bg-red-400 dark:bg-error-500/15 dark:text-error-500 px-4 py-3 font-medium text-white hover:bg-red-500 lg:inline-flex lg:w-auto"
+                      type="button"
+                      onclick="window.location.href='?page=pembelian_hapus&&id=<?php echo $data['id_penjualan']; ?>'">
+                      <svg class="fill-current" width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M6 2a1 1 0 00-1 1v1h10V3a1 1 0 00-1-1H6zm-2 4v9a2 2 0 002 2h8a2 2 0 002-2V6H4z" fill="currentColor" />
+                      </svg>
+                      Hapus
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </form>
+        <?php
+        }}
         ?>
       </table>
     </div>
@@ -183,7 +260,7 @@ if (isset($_POST['nama_pembeli'])) {
       <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">Detail Pembelian</h4>
     </div>
     <form method="POST" action="" class="flex flex-col">
-      <div class="custom-scrollbar h-[450px] overflow-y-auto px-2">
+      <div id="printArea" class="custom-scrollbar h-[450px] overflow-y-auto px-2">
         <div class="mt-7">
           <h5 class="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">Informasi Pembelian</h5>
           <div class="grid grid-cols-4 gap-x-6 gap-y-5 lg:grid-cols-4">
@@ -233,7 +310,14 @@ if (isset($_POST['nama_pembeli'])) {
           Tutup
         </button>
         <button
-          type="submit"
+          type="button"
+          onclick="(function(){
+          var printContents = document.getElementById('printArea').innerHTML;
+          var originalContents = document.body.innerHTML;
+          document.body.innerHTML = printContents;
+          window.print();
+          document.body.innerHTML = originalContents;
+          })()"
           class="flex w-full justify-center rounded-lg bg-success-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-success-600 sm:w-auto">
           Cetak
         </button>
