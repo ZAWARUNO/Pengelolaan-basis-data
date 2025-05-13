@@ -5,8 +5,9 @@ Branch TEAM UI/UX
   <li>Farischa Arni Iskandar</li>
   <li>Salsabila</li>
 </ol>
+<a href="https://www.figma.com/design/MYfdgbii0pY6t6DjlRDFql/Untitled?node-id=0-1&t=RXBDfD1fAcDCNpAg-1">LINK UI/UX</a>
 
-![Preview](./preview.png)
+![Preview](Dashboard.png)
 
 <h2>Langkah-langkah Update Tugas UI/UX</h2>
 <ol>
