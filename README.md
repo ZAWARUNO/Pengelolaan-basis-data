@@ -6,7 +6,7 @@ Branch TEAM Flowchart
   <li>Khairunisa</li>
 </ol>
 
-![Preview](priview.png)
+![Preview](Priview.png)
 
 
 <h2>Langkah-langkah Update Tugas Flowchart</h2>
