@@ -5,7 +5,7 @@ Branch TEAM Flowchart
   <li>Difa Bintang</li>
   <li>Khairunisa</li>
 </ol>
-<a href="https://drive.google.com/file/d/15VIyuAm4u9E40tyG_mkkTL_0AydISBLk/view?usp=sharing" target="_blank">LINK UI/UX</a>
+<a href="https://drive.google.com/file/d/15VIyuAm4u9E40tyG_mkkTL_0AydISBLk/view?usp=sharing" target="_blank">LINK FLOWCHART</a>
 
 ![Preview](Preview.png)
 
